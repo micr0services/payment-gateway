@@ -1,9 +1,6 @@
 name = "payment-gateway"
 
-# If your app is Node.js (Express), it cannot run directly on Workers.
-# You need to port it to a Worker-compatible framework (Hono, itty-router)
-# or deploy Node.js elsewhere.
-main = "dist/server.js"
+main = "dist/worker.js"
 
 # Runtime features
 compatibility_date = "2026-03-01"
@@ -12,6 +9,14 @@ compatibility_flags = ["nodejs_compat"]
 # Enable preview on workers.dev
 workers_dev = true
 
+# Environment Variables
+[vars]
+STRIPE_SECRET_KEY = "your_stripe_secret_key_here"
+PAYPAL_ENVIRONMENT = "sandbox"
+PAYPAL_CLIENT_ID = "your_paypal_client_id_here"
+PAYPAL_CLIENT_SECRET = "your_paypal_client_secret_here"
+DATABASE_URL = "postgresql://user:password@localhost:5432/payment_gateway"
+migrations_dir = "migrations"
 
 [build]
 command = "npm ci && npm run build"

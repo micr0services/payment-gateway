@@ -1,7 +1,5 @@
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 interface PaymentResult {
   success: boolean;
   clientSecret?: string | null;
@@ -12,12 +10,14 @@ interface PaymentResult {
 
 /**
  * Processes a payment using Stripe by creating a PaymentIntent.
+ * @param stripeSecretKey - The Stripe secret key
  * @param amount - The amount in cents
  * @param currency - The currency code (e.g., 'usd')
  * @param metadata - Additional metadata for the payment
  * @returns Promise resolving to payment result
  */
-async function processStripePayment(amount: number, currency: string, metadata: any): Promise<PaymentResult> {
+async function processStripePayment(stripeSecretKey: string, amount: number, currency: string, metadata: any): Promise<PaymentResult> {
+  const stripe = new Stripe(stripeSecretKey);
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
@@ -33,10 +33,12 @@ async function processStripePayment(amount: number, currency: string, metadata: 
 
 /**
  * Confirms a Stripe PaymentIntent.
+ * @param stripeSecretKey - The Stripe secret key
  * @param paymentIntentId - The ID of the PaymentIntent to confirm
  * @returns Promise resolving to confirmation result
  */
-async function confirmStripePayment(paymentIntentId: string): Promise<PaymentResult> {
+async function confirmStripePayment(stripeSecretKey: string, paymentIntentId: string): Promise<PaymentResult> {
+  const stripe = new Stripe(stripeSecretKey);
   try {
     const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId);
     return { success: true, status: paymentIntent.status, id: paymentIntent.id };

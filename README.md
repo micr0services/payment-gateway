@@ -1,15 +1,15 @@
-# Node.js Payment Gateway
+# Cloudflare Workers Payment Gateway
 
-A secure, low-latency payment gateway supporting PayPal and Stripe with idempotency and retry logic.
+A secure, low-latency payment gateway supporting PayPal and Stripe with idempotency and retry logic, deployed on Cloudflare Workers.
 
 ## Features
 
 - Support for PayPal and Stripe payments
 - Idempotency to prevent double payments
 - Retry logic for failed transactions
-- Transaction storage in PostgreSQL
+- Transaction storage in PostgreSQL database
 - Low latency with async operations
-- Security with Helmet and CORS
+- Global CDN deployment with Cloudflare Workers
 
 ## Setup
 
@@ -18,35 +18,84 @@ A secure, low-latency payment gateway supporting PayPal and Stripe with idempote
    npm install
    ```
 
-2. Set up a PostgreSQL database. You can either run a local Postgres instance or use Supabase (preferred).
-   * For Supabase, go to your project dashboard → Settings → Database → Connection Pooling and copy the connection string (e.g. `postgresql://postgres:...@xyz.supabase.co:5432/postgres`).
-   * Paste the value into `.env` as `DATABASE_URL`.
-   * If your database requires SSL/TLS (Supabase does), also add `DATABASE_SSL=true`.
+2. Set up a PostgreSQL database:
+   ```bash
+   # For local development with Docker
+   docker run -d --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 postgres:15
 
-3. Apply database migrations. The project now uses TypeORM for schema
-   management; run the migration script instead of raw SQL. Make sure the
-   `DATABASE_SSL` variable is set to `true` if your host requires TLS (e.g.
-   Supabase). Then execute:
+   # Or use a cloud provider like Supabase, Neon, or Railway
+   # Get the connection string from your provider
+   ```
+
+3. Apply database migrations:
    ```bash
    npm run migrate
    ```
-   This will create the `transactions` table and record applied migrations.
+   This will create the `transactions` table with proper indexes.
 
-4. Update `.env` with your Stripe and PayPal credentials.
-
-5. Start the server:
-   ```bash
-   npm start
+4. Configure environment variables in `wrangler.toml`:
+   ```toml
+   [vars]
+   STRIPE_SECRET_KEY = "your_stripe_secret_key_here"
+   PAYPAL_ENVIRONMENT = "sandbox"
+   PAYPAL_CLIENT_ID = "your_paypal_client_id_here"
+   PAYPAL_CLIENT_SECRET = "your_paypal_client_secret_here"
    ```
 
-## API Documentation
+   For production, use secrets instead:
+   ```bash
+   wrangler secret put STRIPE_SECRET_KEY
+   wrangler secret put PAYPAL_CLIENT_ID
+   wrangler secret put PAYPAL_CLIENT_SECRET
+   ```
 
-The API is fully documented with Swagger/OpenAPI. After starting the server, visit:
+4. Start development server:
+   ```bash
+   npm run dev
+   ```
+
+5. Deploy to production:
+   ```bash
+   npm run deploy
+   ```
+
+## API Endpoints
+
+### Stripe Payment
 ```
-http://localhost:3000/api-docs
+POST /api/payments/stripe
+Content-Type: application/json
+Idempotency-Key: unique-key
+
+{
+  "amount": 1000,
+  "currency": "usd",
+  "metadata": {}
+}
 ```
 
-This provides an interactive UI to explore and test all endpoints.
+### PayPal Payment
+```
+POST /api/payments/paypal
+Content-Type: application/json
+Idempotency-Key: unique-key
+
+{
+  "amount": 1000,
+  "currency": "USD",
+  "metadata": {}
+}
+```
+
+### PayPal Confirm
+```
+POST /api/payments/paypal/confirm/{orderId}
+```
+
+### List Transactions
+```
+GET /api/transactions?gateway=stripe&status=completed
+```
 
 The specification currently documents the following operations:
 
@@ -71,7 +120,7 @@ Idempotency-Key: unique-payment-id-12345
 
 1. **Create Payment Intent**
    ```bash
-   curl -X POST http://localhost:3000/api/payments/stripe \
+   curl -X POST https://your-worker-url.workers.dev/api/payments/stripe \
      -H "Content-Type: application/json" \
      -H "Idempotency-Key: stripe-payment-001" \
      -d '{
@@ -103,7 +152,7 @@ navigate to – attempting a capture before approval results in the familiar
 
 1. **Create Order**
    ```bash
-   curl -X POST http://localhost:3000/api/payments/paypal \
+   curl -X POST https://your-worker-url.workers.dev/api/payments/paypal \
      -H "Content-Type: application/json" \
      -H "Idempotency-Key: paypal-payment-001" \
      -d '{
@@ -138,7 +187,7 @@ navigate to – attempting a capture before approval results in the familiar
 
 4. **Capture Order** after approval:
    ```bash
-   curl -X POST http://localhost:3000/api/payments/paypal/confirm/5O190127TN364715T
+   curl -X POST https://your-worker-url.workers.dev/api/payments/paypal/confirm/5O190127TN364715T
    ```
 
 If you try to capture before approval the API will return an error similar

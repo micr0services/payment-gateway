@@ -1,8 +1,4 @@
-import fetch from 'node-fetch';
-
-const PAYPAL_BASE = process.env.PAYPAL_ENVIRONMENT === 'live'
-  ? 'https://api.paypal.com'
-  : 'https://api.sandbox.paypal.com';
+// import fetch from 'node-fetch';
 
 interface PaypalResult {
   success: boolean;
@@ -14,12 +10,18 @@ interface PaypalResult {
   approvalUrl?: string;
 }
 
-async function getPaypalToken(): Promise<string> {
+function getPaypalBaseUrl(environment: string): string {
+  return environment === 'live'
+    ? 'https://api.paypal.com'
+    : 'https://api.sandbox.paypal.com';
+}
+
+async function getPaypalToken(paypalBase: string, clientId: string, clientSecret: string): Promise<string> {
   const credentials = Buffer.from(
-    `${process.env.PAYPAL_CLIENT_ID!}:${process.env.PAYPAL_CLIENT_SECRET!}`
+    `${clientId}:${clientSecret}`
   ).toString('base64');
 
-  const resp = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
+  const resp = await fetch(`${paypalBase}/v1/oauth2/token`, {
     method: 'POST',
     headers: {
       Authorization: `Basic ${credentials}`,
@@ -33,13 +35,17 @@ async function getPaypalToken(): Promise<string> {
 
 /**
  * Processes a payment using PayPal by creating an order.
+ * @param paypalEnvironment - The PayPal environment ('live' or 'sandbox')
+ * @param paypalClientId - The PayPal client ID
+ * @param paypalClientSecret - The PayPal client secret
  * @param amount - The amount in cents (converted to dollars for PayPal)
  * @param currency - The currency code
  */
-async function processPaypalPayment(amount: number, currency: string): Promise<PaypalResult> {
+async function processPaypalPayment(paypalEnvironment: string, paypalClientId: string, paypalClientSecret: string, amount: number, currency: string): Promise<PaypalResult> {
+  const paypalBase = getPaypalBaseUrl(paypalEnvironment);
   try {
-    const token = await getPaypalToken();
-    const resp = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
+    const token = await getPaypalToken(paypalBase, paypalClientId, paypalClientSecret);
+    const resp = await fetch(`${paypalBase}/v2/checkout/orders`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -58,14 +64,14 @@ async function processPaypalPayment(amount: number, currency: string): Promise<P
     const order: any = await resp.json();
     if (resp.ok) {
       // look for approval link in the HATEOAS links array so callers can
-    // redirect the user immediately
-    const approveLink = (order.links || []).find((l: any) => l.rel === 'approve');
-    return {
-      success: true,
-      orderId: order.id,
-      links: order.links,
-      approvalUrl: approveLink ? approveLink.href : undefined,
-    };
+      // redirect the user immediately
+      const approveLink = (order.links || []).find((l: any) => l.rel === 'approve');
+      return {
+        success: true,
+        orderId: order.id,
+        links: order.links,
+        approvalUrl: approveLink ? approveLink.href : undefined,
+      };
     } else {
       return { success: false, error: JSON.stringify(order) };
     }
@@ -74,10 +80,11 @@ async function processPaypalPayment(amount: number, currency: string): Promise<P
   }
 }
 
-async function capturePaypalPayment(orderId: string): Promise<PaypalResult> {
+async function capturePaypalPayment(paypalEnvironment: string, paypalClientId: string, paypalClientSecret: string, orderId: string): Promise<PaypalResult> {
+  const paypalBase = getPaypalBaseUrl(paypalEnvironment);
   try {
-    const token = await getPaypalToken();
-    const resp = await fetch(`${PAYPAL_BASE}/v2/checkout/orders/${orderId}/capture`, {
+    const token = await getPaypalToken(paypalBase, paypalClientId, paypalClientSecret);
+    const resp = await fetch(`${paypalBase}/v2/checkout/orders/${orderId}/capture`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,

@@ -1,4 +1,4 @@
-import pool from '../config/database';
+import postgres from 'postgres';
 
 interface TransactionData {
   id?: number;
@@ -10,8 +10,8 @@ interface TransactionData {
   transaction_id?: string;
   error?: string;
   metadata: any;
-  created_at?: Date;
-  updated_at?: Date;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface CreateTransactionParams {
@@ -31,109 +31,133 @@ class Transaction {
   /**
    * Creates a new transaction record in the database.
    * Uses ON CONFLICT DO NOTHING to handle idempotency at the database level.
+   * @param databaseUrl - PostgreSQL connection string
    * @param params - The transaction parameters
    * @returns The created transaction data or undefined if conflict
    */
-  static async create(params: CreateTransactionParams): Promise<TransactionData | undefined> {
+  static async create(databaseUrl: string, params: CreateTransactionParams): Promise<TransactionData | undefined> {
     const { idempotencyKey, gateway, amount, currency, status, metadata } = params;
-    const query = `
-      INSERT INTO transactions (idempotency_key, gateway, amount, currency, status, metadata, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
-      ON CONFLICT (idempotency_key) DO NOTHING
-      RETURNING *;
-    `;
-    const values = [idempotencyKey, gateway, amount, currency, status, JSON.stringify(metadata)];
-    const result = await pool.query(query, values);
-    return result.rows[0];
+    const sql = postgres(databaseUrl);
+    try {
+      const result = await sql`
+        INSERT INTO transactions (idempotency_key, gateway, amount, currency, status, metadata, created_at, updated_at)
+        VALUES (${idempotencyKey}, ${gateway}, ${amount}, ${currency}, ${status}, ${JSON.stringify(metadata)}, NOW(), NOW())
+        ON CONFLICT (idempotency_key) DO NOTHING
+        RETURNING *;
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
   }
 
   /**
    * Finds a transaction by its idempotency key.
+   * @param databaseUrl - PostgreSQL connection string
    * @param idempotencyKey - The unique idempotency key
    * @returns The transaction data or undefined if not found
    */
-  static async findByIdempotencyKey(idempotencyKey: string): Promise<TransactionData | undefined> {
-    const query = 'SELECT * FROM transactions WHERE idempotency_key = $1';
-    const result = await pool.query(query, [idempotencyKey]);
-    return result.rows[0];
+  static async findByIdempotencyKey(databaseUrl: string, idempotencyKey: string): Promise<TransactionData | undefined> {
+    const sql = postgres(databaseUrl);
+    try {
+      const result = await sql`
+        SELECT * FROM transactions WHERE idempotency_key = ${idempotencyKey};
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
   }
 
   /**
-   * Updates the status of a transaction.
-   * @param idempotencyKey - The idempotency key of the transaction
+   * Updates a transaction's status and optionally sets transaction_id or error.
+   * @param databaseUrl - PostgreSQL connection string
+   * @param idempotencyKey - The idempotency key of the transaction to update
    * @param status - The new status
-   * @param transactionId - Optional gateway transaction ID
-   * @param error - Optional error message
-   * @returns The updated transaction data
+   * @param transactionId - Optional transaction ID from the payment provider
+   * @param error - Optional error message if the transaction failed
+   * @returns The updated transaction data or undefined if not found
    */
   static async updateStatus(
+    databaseUrl: string,
     idempotencyKey: string,
     status: string,
     transactionId: string | null = null,
     error: string | null = null
   ): Promise<TransactionData | undefined> {
-    const query = `
-      UPDATE transactions
-      SET status = $1, transaction_id = $2, error = $3, updated_at = NOW()
-      WHERE idempotency_key = $4
-      RETURNING *;
-    `;
-    const values = [status, transactionId, error, idempotencyKey];
-    const result = await pool.query(query, values);
-    return result.rows[0];
+    const sql = postgres(databaseUrl);
+    try {
+      const result = await sql`
+        UPDATE transactions
+        SET status = ${status}, transaction_id = ${transactionId}, error = ${error}, updated_at = NOW()
+        WHERE idempotency_key = ${idempotencyKey}
+        RETURNING *;
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
   }
 
   /**
    * Lists transactions with optional filters.
    * Supported filters: gateway, status, minAmount, maxAmount,
    * startDate, endDate, idempotencyKey.
+   * @param databaseUrl - PostgreSQL connection string
+   * @param filters - Optional filters to apply
+   * @returns Array of transaction data
    */
-  static async list(filters: {
+  static async list(databaseUrl: string, filters: {
     gateway?: string;
     status?: string;
     minAmount?: number;
     maxAmount?: number;
-    startDate?: string; // ISO date
-    endDate?: string;   // ISO date
+    startDate?: string;
+    endDate?: string;
     idempotencyKey?: string;
-  }): Promise<TransactionData[]> {
-    const conditions: string[] = [];
-    const values: any[] = [];
-    let idx = 1;
+  } = {}): Promise<TransactionData[]> {
+    const sql = postgres(databaseUrl);
+    try {
+      let conditions: string[] = [];
+      let values: any[] = [];
 
-    if (filters.gateway) {
-      conditions.push(`gateway = $${idx++}`);
-      values.push(filters.gateway);
-    }
-    if (filters.status) {
-      conditions.push(`status = $${idx++}`);
-      values.push(filters.status);
-    }
-    if (filters.minAmount !== undefined) {
-      conditions.push(`amount >= $${idx++}`);
-      values.push(filters.minAmount);
-    }
-    if (filters.maxAmount !== undefined) {
-      conditions.push(`amount <= $${idx++}`);
-      values.push(filters.maxAmount);
-    }
-    if (filters.startDate) {
-      conditions.push(`created_at >= $${idx++}`);
-      values.push(filters.startDate);
-    }
-    if (filters.endDate) {
-      conditions.push(`created_at <= $${idx++}`);
-      values.push(filters.endDate);
-    }
-    if (filters.idempotencyKey) {
-      conditions.push(`idempotency_key = $${idx++}`);
-      values.push(filters.idempotencyKey);
-    }
+      if (filters.gateway) {
+        conditions.push('gateway = ?');
+        values.push(filters.gateway);
+      }
+      if (filters.status) {
+        conditions.push('status = ?');
+        values.push(filters.status);
+      }
+      if (filters.minAmount !== undefined) {
+        conditions.push('amount >= ?');
+        values.push(filters.minAmount);
+      }
+      if (filters.maxAmount !== undefined) {
+        conditions.push('amount <= ?');
+        values.push(filters.maxAmount);
+      }
+      if (filters.startDate) {
+        conditions.push('created_at >= ?');
+        values.push(filters.startDate);
+      }
+      if (filters.endDate) {
+        conditions.push('created_at <= ?');
+        values.push(filters.endDate);
+      }
+      if (filters.idempotencyKey) {
+        conditions.push('idempotency_key = ?');
+        values.push(filters.idempotencyKey);
+      }
 
-    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const query = `SELECT * FROM transactions ${where} ORDER BY created_at DESC`;
-    const result = await pool.query(query, values);
-    return result.rows;
+      const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+      const query = `SELECT * FROM transactions ${whereClause} ORDER BY created_at DESC`;
+
+      const result = await sql.unsafe(query, values);
+      return result as unknown as TransactionData[];
+    } finally {
+      await sql.end();
+    }
   }
 }
 
