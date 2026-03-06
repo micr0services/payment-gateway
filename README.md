@@ -37,7 +37,7 @@ A secure, low-latency payment gateway supporting PayPal and Stripe with idempote
    ```toml
    [vars]
    STRIPE_SECRET_KEY = "your_stripe_secret_key_here"
-   PAYPAL_ENVIRONMENT = "sandbox"
+   PAYPAL_ENVIRONMENT = "live"  # or "sandbox"
    PAYPAL_CLIENT_ID = "your_paypal_client_id_here"
    PAYPAL_CLIENT_SECRET = "your_paypal_client_secret_here"
    ```
