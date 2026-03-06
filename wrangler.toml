@@ -12,7 +12,10 @@ name = "payment-gateway"
 main = "dist/server.js"
 # The date (YYYY-MM-DD) used by Cloudflare to determine which runtime
 # features are available.  Update when you deploy.
-compatibility_date = "2026-03-06"
+compatibility_date = "2026-03-01"  # use a recent date supporting nodejs_compat
+
+# Enable Node.js polyfills to resolve http/https/path/util and similar
+compatibility_flags = ["nodejs_compat"]
 
 # Uncomment and fill in the following when you're ready to deploy.
 # account_id = "<your-account-id>"
