@@ -21,7 +21,8 @@ compatibility_date = "2026-03-06"
 workers_dev = true
 
 [build]
-  command = "npm run build"
+  # ensure dependencies are installed before building in Cloudflare environment
+  command = "npm ci && npm run build"
 
 # Example production environment.  Set `workers_dev=false`, provide a
 # route and zone_id, and run `wrangler publish --env production`.
