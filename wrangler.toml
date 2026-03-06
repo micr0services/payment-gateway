@@ -1,35 +1,21 @@
-# Cloudflare Workers configuration for the payment-gateway project
-# Replace the placeholder values with your own account/zone information.
-
 name = "payment-gateway"
-# most common type for a Node-style project is "webpack" so that the
-# build output (dist/) can be bundled.  You may also use "javascript"
-# and point "main" at a compiled ES module.  Express itself is not
-# compatible with Workers, so you'll need to port the app (see README)
-# if you actually intend to run it as a Worker.  This config simply
-# demonstrates the boilerplate file structure.
 
+# If your app is Node.js (Express), it cannot run directly on Workers.
+# You need to port it to a Worker-compatible framework (Hono, itty-router)
+# or deploy Node.js elsewhere.
 main = "dist/server.js"
-# The date (YYYY-MM-DD) used by Cloudflare to determine which runtime
-# features are available.  Update when you deploy.
-compatibility_date = "2026-03-01"  # use a recent date supporting nodejs_compat
 
-# Enable Node.js polyfills to resolve http/https/path/util and similar
+# Runtime features
+compatibility_date = "2026-03-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Uncomment and fill in the following when you're ready to deploy.
-# account_id = "<your-account-id>"
-# zone_id = "<your-zone-id>"
-
+# Enable preview on workers.dev
 workers_dev = true
 
-[build]
-  # ensure dependencies are installed before building in Cloudflare environment
-  command = "npm ci && npm run build"
 
-# Example production environment.  Set `workers_dev=false`, provide a
-# route and zone_id, and run `wrangler publish --env production`.
+[build]
+command = "npm ci && npm run build"
+
 [env.production]
-  workers_dev = false
-  route = "https://payments.example.com/*"
-  # zone_id = "<your-zone-id>"
+workers_dev = false
+route = "payments.example.com/*"
