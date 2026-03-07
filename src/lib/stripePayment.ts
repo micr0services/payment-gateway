@@ -62,7 +62,7 @@ async function processStripePayment(
       amount,
       currency: currency.toLowerCase(),
       metadata,
-      automatic_payment_methods: { enabled: true },
+      automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
     }, {
       idempotencyKey: idempotencyKey || `stripe-${Date.now()}-${Math.random()}`
     });
