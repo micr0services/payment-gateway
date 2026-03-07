@@ -37,7 +37,7 @@ app.route('/api', transactionsRouter);
 app.route('/api/webhooks', webhooksRouter);
 
 // OpenAPI specification
-app.get('/api/openapi.json', (c: { json: (arg0: { openapi: string; info: { title: string; version: string; description: string; }; servers: { url: string; description: string; }[]; paths: { '/api/payments/stripe': { post: { summary: string; description: string; tags: string[]; security: never[]; parameters: { name: string; in: string; required: boolean; schema: { type: string; }; description: string; }[]; requestBody: { required: boolean; content: { 'application/json': { schema: { type: string; properties: { amount: { type: string; description: string; }; currency: { type: string; default: string; description: string; }; metadata: { type: string; description: string; }; }; required: string[]; }; }; }; }; responses: { '200': { description: string; content: { 'application/json': { schema: { type: string; properties: { clientSecret: { type: string; }; transactionId: { type: string; }; }; }; }; }; }; '400': { description: string; }; '409': { description: string; }; '500': { description: string; }; }; }; }; '/api/payments/paypal': { post: { summary: string; description: string; tags: string[]; parameters: { name: string; in: string; required: boolean; schema: { type: string; }; }[]; requestBody: { required: boolean; content: { 'application/json': { schema: { type: string; properties: { amount: { type: string; description: string; }; currency: { type: string; default: string; }; metadata: { type: string; }; }; required: string[]; }; }; }; }; responses: { '200': { description: string; content: { 'application/json': { schema: { type: string; properties: { orderId: { type: string; }; links: { type: string; }; }; }; }; }; }; '400': { description: string; }; '409': { description: string; }; '500': { description: string; }; }; }; }; '/api/payments/paypal/confirm/{orderId}': { post: { summary: string; description: string; tags: string[]; parameters: { name: string; in: string; required: boolean; schema: { type: string; }; }[]; responses: { '200': { description: string; content: { 'application/json': { schema: { type: string; properties: { status: { type: string; }; id: { type: string; }; }; }; }; }; }; '500': { description: string; }; }; }; }; '/api/transactions': { get: { summary: string; description: string; tags: string[]; parameters: { name: string; in: string; schema: { type: string; }; }[]; responses: { '200': { description: string; content: { 'application/json': { schema: { type: string; items: { type: string; properties: { id: { type: string; }; idempotency_key: { type: string; }; gateway: { type: string; }; amount: { type: string; }; currency: { type: string; }; status: { type: string; }; transaction_id: { type: string; }; error: { type: string; }; metadata: { type: string; }; created_at: { type: string; }; updated_at: { type: string; }; }; }; }; }; }; }; '500': { description: string; }; }; }; }; }; }) => any; }) => {
+app.get('/api/openapi.json', (c) => {
   return c.json({
     openapi: '3.0.0',
     info: {
@@ -74,7 +74,7 @@ app.get('/api/openapi.json', (c: { json: (arg0: { openapi: string; info: { title
                 schema: {
                   type: 'object',
                   properties: {
-                    amount: { type: 'integer', description: 'Payment amount in cents' },
+                    amount: { type: 'integer', description: 'Payment amount in cents (e.g., 50 for $0.50)' },
                     currency: { type: 'string', default: 'usd', description: 'Currency code' },
                     metadata: { type: 'object', description: 'Additional metadata' },
                   },
@@ -230,6 +230,155 @@ app.get('/api/openapi.json', (c: { json: (arg0: { openapi: string; info: { title
             '500': { description: 'Internal server error' },
           },
         },
+      },
+      '/api/payments/stripe/{paymentIntentId}': {
+        get: {
+          summary: 'Get Stripe Payment Status',
+          description: 'Retrieve the status of a Stripe payment intent',
+          tags: ['Payments'],
+          parameters: [
+            {
+              name: 'paymentIntentId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Stripe payment intent ID'
+            }
+          ],
+          responses: {
+            '200': {
+              description: 'Payment status retrieved successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      paymentIntentId: { type: 'string' },
+                      status: { type: 'string' },
+                      transaction: { type: 'object' }
+                    }
+                  }
+                }
+              }
+            },
+            '400': { description: 'Bad request' },
+            '500': { description: 'Internal server error' }
+          }
+        }
+      },
+      '/api/payments/stripe/{paymentIntentId}/cancel': {
+        post: {
+          summary: 'Cancel Stripe Payment',
+          description: 'Cancel a pending Stripe payment intent',
+          tags: ['Payments'],
+          parameters: [
+            {
+              name: 'paymentIntentId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Stripe payment intent ID'
+            }
+          ],
+          responses: {
+            '200': {
+              description: 'Payment cancelled successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      paymentIntentId: { type: 'string' },
+                      status: { type: 'string' },
+                      message: { type: 'string' }
+                    }
+                  }
+                }
+              }
+            },
+            '400': { description: 'Bad request' },
+            '500': { description: 'Internal server error' }
+          }
+        }
+      },
+      '/api/payments/stripe/{paymentIntentId}/refund': {
+        post: {
+          summary: 'Refund Stripe Payment',
+          description: 'Process a refund for a completed Stripe payment',
+          tags: ['Payments'],
+          parameters: [
+            {
+              name: 'paymentIntentId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Stripe payment intent ID'
+            }
+          ],
+          requestBody: {
+            required: false,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    amount: { type: 'integer', description: 'Refund amount in cents (optional, full refund if not specified)' }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            '200': {
+              description: 'Refund processed successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      refundId: { type: 'string' },
+                      status: { type: 'string' },
+                      message: { type: 'string' }
+                    }
+                  }
+                }
+              }
+            },
+            '400': { description: 'Bad request' },
+            '500': { description: 'Internal server error' }
+          }
+        }
+      },
+      '/api/webhooks/stripe': {
+        post: {
+          summary: 'Stripe Webhook',
+          description: 'Handle Stripe webhook events for payment updates',
+          tags: ['Webhooks'],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { type: 'object' }
+              }
+            }
+          },
+          responses: {
+            '200': {
+              description: 'Webhook received',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      received: { type: 'boolean' }
+                    }
+                  }
+                }
+              }
+            },
+            '400': { description: 'Webhook verification failed' }
+          }
+        }
       },
     },
   });
