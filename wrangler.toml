@@ -9,17 +9,6 @@ compatibility_flags = ["nodejs_compat"]
 # Enable preview on workers.dev
 workers_dev = true
 
-# Environment Variables
-[vars]
-DATABASE_URL = "postgresql://onlinedbtester_user:Oi4HR7cZKdo0AuwkLLQIoCrLrbSE30SQ@dpg-d6imjtua2pns7398ghs0-a.oregon-postgres.render.com/onlinedbtester?sslmode=require"
-STRIPE_SECRET_KEY = "sk_test_51RETBFE1RNkEVzu6vhEYBxRjTtP0EzbaE3vr4oaeoCZfq8QYrkMPBlqVE1GrOPPIM5oXdWANPhTFbmmOL45fPzCm00Uxgtxyb6"
-STRIPE_PUBLISHABLE_KEY = "pk_test_51RETBFE1RNkEVzu6CowibRGFX3AaY9jbBHBozYv2HVlVEIOAasB3cDvcMZ1NTN06ssF0M8qANm3M8F4fNbARcrDo00YV3x2pr9"
-PAYPAL_CLIENT_ID = "AS3Vq6bx5mFuwfrhXyKxBmIVxHt4DHu39GkhAEboxdWUZ1PdOPNUHV38lGdjwzQEs6a6BWSptyj6tC52"
-PAYPAL_CLIENT_SECRET = "EOm43_MFKOAg5HFAaJqyA8QStV3nN_p0D4bHZHosZbvuBYObH00mJUF1G2wuJJaHxOl6bkByN_mdtzLT"
-PAYPAL_ENVIRONMENT = "live"
-migrations_dir = "migrations"
-JWT_SECRET = "wilfred_me_secret_keyupdate"
-
 [build]
 command = "npm ci && npm run build"
 
