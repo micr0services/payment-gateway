@@ -1,10 +1,12 @@
 import { MiddlewareHandler } from 'hono';
+import { v4 as uuidv4 } from 'uuid';
 import Transaction from '../models/Transaction';
 
 /**
  * Middleware to enforce idempotency for payment requests.
  * Checks if a transaction with the given Idempotency-Key already exists.
  * If it does, returns the existing transaction status.
+ * If no Idempotency-Key is provided, auto-generates one using current timestamp and UUID.
  * Otherwise, attaches the key to the context and proceeds.
  */
 const idempotencyMiddleware: MiddlewareHandler<{ 
@@ -19,9 +21,11 @@ const idempotencyMiddleware: MiddlewareHandler<{
     idempotencyKey: string;
   };
 }> = async (c, next) => {
-  const idempotencyKey = c.req.header('Idempotency-Key');
+  let idempotencyKey = c.req.header('Idempotency-Key');
+  
+  // Auto-generate idempotency key if not provided
   if (!idempotencyKey) {
-    return c.json({ error: 'Idempotency-Key header is required' }, 400);
+    idempotencyKey = `auto-${Date.now()}-${uuidv4()}`;
   }
 
   try {
