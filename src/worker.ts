@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { apiReference } from 'hono/api-reference';
+import { apiReference } from '@scalar/hono-api-reference';
 import stripeRouter from './routes/stripe';
 import paypalRouter from './routes/paypal';
 import paypalConfirmRouter from './routes/paypalConfirm';
