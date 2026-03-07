@@ -13,19 +13,29 @@ async function migrate() {
     process.exit(1);
   }
 
-  const sql = postgres(databaseUrl);
+  // Add SSL configuration for Render PostgreSQL
+  const sql = postgres(databaseUrl, {
+    ssl: 'require'
+  });
 
   try {
-    // Read the migration file
-    const migrationPath = path.join(__dirname, '..', 'migrations', '0001_create_transactions.sql');
-    const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+    // Read the migration files in order
+    const migrations = [
+      '0001_create_transactions.sql',
+      '0002_add_payment_provider_ids.sql'
+    ];
 
-    // Split by -- Down migration and take only the up migration
-    const upMigration = migrationSQL.split('-- Down migration')[0].trim();
+    for (const migrationFile of migrations) {
+      const migrationPath = path.join(__dirname, '..', 'migrations', migrationFile);
+      const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
 
-    console.log('Running migration...');
-    await sql.unsafe(upMigration);
-    console.log('Migration completed successfully!');
+      // Split by -- Down migration and take only the up migration
+      const upMigration = migrationSQL.split('-- Down migration')[0].trim();
+
+      console.log(`Running migration: ${migrationFile}`);
+      await sql.unsafe(upMigration);
+      console.log(`Migration ${migrationFile} completed successfully!`);
+    }
   } catch (error) {
     console.error('Migration failed:', error);
     process.exit(1);

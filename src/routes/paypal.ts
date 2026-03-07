@@ -20,6 +20,11 @@ const router = new Hono<{
 router.post('/paypal', idempotencyMiddleware, async (c) => {
   const { amount, currency = 'USD', metadata = {} } = await c.req.json();
 
+  // Validate input
+  if (!amount || amount <= 0) {
+    return c.json({ error: 'Valid amount is required' }, 400);
+  }
+
   try {
     const transaction = await Transaction.create(c.env.DATABASE_URL, {
       idempotencyKey: c.get('idempotencyKey'),
@@ -42,9 +47,23 @@ router.post('/paypal', idempotencyMiddleware, async (c) => {
       return paymentResult;
     }, { retries: 3 });
 
-    await Transaction.updateStatus(c.env.DATABASE_URL, c.get('idempotencyKey'), 'completed', result.orderId);
+    // Update transaction with PayPal Order ID
+    await Transaction.updateStatus(
+      c.env.DATABASE_URL,
+      c.get('idempotencyKey'),
+      'pending', // Status remains pending until webhook confirms
+      result.orderId,
+      null,
+      null, // stripe_payment_intent_id
+      result.orderId // paypal_order_id
+    );
 
-    return c.json({ orderId: result.orderId, links: result.links });
+    return c.json({
+      orderId: result.orderId,
+      links: result.links,
+      approvalUrl: result.approvalUrl,
+      status: 'pending'
+    });
   } catch (error: any) {
     await Transaction.updateStatus(c.env.DATABASE_URL, c.get('idempotencyKey'), 'failed', null, error.message);
     return c.json({ error: error.message }, 500);

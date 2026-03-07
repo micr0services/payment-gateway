@@ -5,10 +5,12 @@ import stripeRouter from './routes/stripe';
 import paypalRouter from './routes/paypal';
 import paypalConfirmRouter from './routes/paypalConfirm';
 import transactionsRouter from './routes/transactions';
+import webhooksRouter from './routes/webhooks';
 
 const app = new Hono<{
   Bindings: {
     STRIPE_SECRET_KEY: string;
+    STRIPE_WEBHOOK_SECRET: string;
     PAYPAL_ENVIRONMENT: string;
     PAYPAL_CLIENT_ID: string;
     PAYPAL_CLIENT_SECRET: string;
@@ -32,6 +34,7 @@ app.route('/api/payments', stripeRouter);
 app.route('/api/payments', paypalRouter);
 app.route('/api/payments', paypalConfirmRouter);
 app.route('/api', transactionsRouter);
+app.route('/api/webhooks', webhooksRouter);
 
 // OpenAPI specification
 app.get('/api/openapi.json', (c: { json: (arg0: { openapi: string; info: { title: string; version: string; description: string; }; servers: { url: string; description: string; }[]; paths: { '/api/payments/stripe': { post: { summary: string; description: string; tags: string[]; security: never[]; parameters: { name: string; in: string; required: boolean; schema: { type: string; }; description: string; }[]; requestBody: { required: boolean; content: { 'application/json': { schema: { type: string; properties: { amount: { type: string; description: string; }; currency: { type: string; default: string; description: string; }; metadata: { type: string; description: string; }; }; required: string[]; }; }; }; }; responses: { '200': { description: string; content: { 'application/json': { schema: { type: string; properties: { clientSecret: { type: string; }; transactionId: { type: string; }; }; }; }; }; }; '400': { description: string; }; '409': { description: string; }; '500': { description: string; }; }; }; }; '/api/payments/paypal': { post: { summary: string; description: string; tags: string[]; parameters: { name: string; in: string; required: boolean; schema: { type: string; }; }[]; requestBody: { required: boolean; content: { 'application/json': { schema: { type: string; properties: { amount: { type: string; description: string; }; currency: { type: string; default: string; }; metadata: { type: string; }; }; required: string[]; }; }; }; }; responses: { '200': { description: string; content: { 'application/json': { schema: { type: string; properties: { orderId: { type: string; }; links: { type: string; }; }; }; }; }; }; '400': { description: string; }; '409': { description: string; }; '500': { description: string; }; }; }; }; '/api/payments/paypal/confirm/{orderId}': { post: { summary: string; description: string; tags: string[]; parameters: { name: string; in: string; required: boolean; schema: { type: string; }; }[]; responses: { '200': { description: string; content: { 'application/json': { schema: { type: string; properties: { status: { type: string; }; id: { type: string; }; }; }; }; }; }; '500': { description: string; }; }; }; }; '/api/transactions': { get: { summary: string; description: string; tags: string[]; parameters: { name: string; in: string; schema: { type: string; }; }[]; responses: { '200': { description: string; content: { 'application/json': { schema: { type: string; items: { type: string; properties: { id: { type: string; }; idempotency_key: { type: string; }; gateway: { type: string; }; amount: { type: string; }; currency: { type: string; }; status: { type: string; }; transaction_id: { type: string; }; error: { type: string; }; metadata: { type: string; }; created_at: { type: string; }; updated_at: { type: string; }; }; }; }; }; }; }; '500': { description: string; }; }; }; }; }; }) => any; }) => {

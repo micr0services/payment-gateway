@@ -10,13 +10,28 @@ interface PaypalResult {
   approvalUrl?: string;
 }
 
+// Singleton PayPal token cache
+const paypalTokenCache = new Map<string, { token: string; expires: number }>();
+
 function getPaypalBaseUrl(environment: string): string {
   return environment === 'live'
     ? 'https://api.paypal.com'
     : 'https://api.sandbox.paypal.com';
 }
 
-async function getPaypalToken(paypalBase: string, clientId: string, clientSecret: string): Promise<string> {
+function getCacheKey(clientId: string, environment: string): string {
+  return `${clientId}-${environment}`;
+}
+
+async function getPaypalToken(paypalBase: string, clientId: string, clientSecret: string, environment: string): Promise<string> {
+  const cacheKey = getCacheKey(clientId, environment);
+  const cached = paypalTokenCache.get(cacheKey);
+
+  // Return cached token if still valid (with 5 minute buffer)
+  if (cached && cached.expires > Date.now() + 300000) {
+    return cached.token;
+  }
+
   const credentials = Buffer.from(
     `${clientId}:${clientSecret}`
   ).toString('base64');
@@ -30,7 +45,37 @@ async function getPaypalToken(paypalBase: string, clientId: string, clientSecret
     body: 'grant_type=client_credentials'
   });
   const data: any = await resp.json();
+
+  if (!resp.ok) {
+    throw new Error(`PayPal token error: ${data.error_description || data.error}`);
+  }
+
+  // Cache token (expires in 9 hours according to PayPal, but we use 8 hours for safety)
+  paypalTokenCache.set(cacheKey, {
+    token: data.access_token,
+    expires: Date.now() + (8 * 60 * 60 * 1000)
+  });
+
   return data.access_token;
+}
+
+/**
+ * Validates payment amount and currency for PayPal
+ */
+function validatePaypalPaymentParams(amount: number, currency: string): void {
+  if (amount <= 0) {
+    throw new Error('Amount must be greater than 0');
+  }
+
+  // PayPal expects amounts in dollars (not cents like Stripe)
+  if (amount < 0.01) {
+    throw new Error('Amount must be at least 0.01');
+  }
+
+  const supportedCurrencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'];
+  if (!supportedCurrencies.includes(currency.toUpperCase())) {
+    throw new Error(`Unsupported currency: ${currency}`);
+  }
 }
 
 /**
@@ -38,13 +83,16 @@ async function getPaypalToken(paypalBase: string, clientId: string, clientSecret
  * @param paypalEnvironment - The PayPal environment ('live' or 'sandbox')
  * @param paypalClientId - The PayPal client ID
  * @param paypalClientSecret - The PayPal client secret
- * @param amount - The amount in cents (converted to dollars for PayPal)
+ * @param amount - The amount in dollars (not cents)
  * @param currency - The currency code
  */
 async function processPaypalPayment(paypalEnvironment: string, paypalClientId: string, paypalClientSecret: string, amount: number, currency: string): Promise<PaypalResult> {
-  const paypalBase = getPaypalBaseUrl(paypalEnvironment);
   try {
-    const token = await getPaypalToken(paypalBase, paypalClientId, paypalClientSecret);
+    validatePaypalPaymentParams(amount, currency);
+
+    const paypalBase = getPaypalBaseUrl(paypalEnvironment);
+    const token = await getPaypalToken(paypalBase, paypalClientId, paypalClientSecret, paypalEnvironment);
+
     const resp = await fetch(`${paypalBase}/v2/checkout/orders`, {
       method: 'POST',
       headers: {
@@ -55,13 +103,14 @@ async function processPaypalPayment(paypalEnvironment: string, paypalClientId: s
         intent: 'CAPTURE',
         purchase_units: [{
           amount: {
-            currency_code: currency,
-            value: (amount / 100).toFixed(2)
+            currency_code: currency.toUpperCase(),
+            value: amount.toFixed(2)
           }
         }]
       })
     });
     const order: any = await resp.json();
+
     if (resp.ok) {
       // look for approval link in the HATEOAS links array so callers can
       // redirect the user immediately
@@ -71,6 +120,7 @@ async function processPaypalPayment(paypalEnvironment: string, paypalClientId: s
         orderId: order.id,
         links: order.links,
         approvalUrl: approveLink ? approveLink.href : undefined,
+        status: order.status
       };
     } else {
       return { success: false, error: JSON.stringify(order) };
@@ -83,7 +133,7 @@ async function processPaypalPayment(paypalEnvironment: string, paypalClientId: s
 async function capturePaypalPayment(paypalEnvironment: string, paypalClientId: string, paypalClientSecret: string, orderId: string): Promise<PaypalResult> {
   const paypalBase = getPaypalBaseUrl(paypalEnvironment);
   try {
-    const token = await getPaypalToken(paypalBase, paypalClientId, paypalClientSecret);
+    const token = await getPaypalToken(paypalBase, paypalClientId, paypalClientSecret, paypalEnvironment);
     const resp = await fetch(`${paypalBase}/v2/checkout/orders/${orderId}/capture`, {
       method: 'POST',
       headers: {

@@ -8,6 +8,8 @@ interface TransactionData {
   currency: string;
   status: string;
   transaction_id?: string;
+  stripe_payment_intent_id?: string;
+  paypal_order_id?: string;
   error?: string;
   metadata: any;
   created_at?: string;
@@ -21,6 +23,8 @@ interface CreateTransactionParams {
   currency: string;
   status: string;
   metadata: any;
+  stripePaymentIntentId?: string;
+  paypalOrderId?: string;
 }
 
 /**
@@ -36,12 +40,12 @@ class Transaction {
    * @returns The created transaction data or undefined if conflict
    */
   static async create(databaseUrl: string, params: CreateTransactionParams): Promise<TransactionData | undefined> {
-    const { idempotencyKey, gateway, amount, currency, status, metadata } = params;
+    const { idempotencyKey, gateway, amount, currency, status, metadata, stripePaymentIntentId, paypalOrderId } = params;
     const sql = postgres(databaseUrl);
     try {
       const result = await sql`
-        INSERT INTO transactions (idempotency_key, gateway, amount, currency, status, metadata, created_at, updated_at)
-        VALUES (${idempotencyKey}, ${gateway}, ${amount}, ${currency}, ${status}, ${JSON.stringify(metadata)}, NOW(), NOW())
+        INSERT INTO transactions (idempotency_key, gateway, amount, currency, status, metadata, stripe_payment_intent_id, paypal_order_id, created_at, updated_at)
+        VALUES (${idempotencyKey}, ${gateway}, ${amount}, ${currency}, ${status}, ${JSON.stringify(metadata)}, ${stripePaymentIntentId || null}, ${paypalOrderId || null}, NOW(), NOW())
         ON CONFLICT (idempotency_key) DO NOTHING
         RETURNING *;
       `;
@@ -70,12 +74,50 @@ class Transaction {
   }
 
   /**
-   * Updates a transaction's status and optionally sets transaction_id or error.
+   * Finds a transaction by its Stripe PaymentIntent ID.
+   * @param databaseUrl - PostgreSQL connection string
+   * @param stripePaymentIntentId - The Stripe PaymentIntent ID
+   * @returns The transaction data or undefined if not found
+   */
+  static async findByStripePaymentIntentId(databaseUrl: string, stripePaymentIntentId: string): Promise<TransactionData | undefined> {
+    const sql = postgres(databaseUrl);
+    try {
+      const result = await sql`
+        SELECT * FROM transactions WHERE stripe_payment_intent_id = ${stripePaymentIntentId};
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
+  }
+
+  /**
+   * Finds a transaction by its PayPal Order ID.
+   * @param databaseUrl - PostgreSQL connection string
+   * @param paypalOrderId - The PayPal Order ID
+   * @returns The transaction data or undefined if not found
+   */
+  static async findByPaypalOrderId(databaseUrl: string, paypalOrderId: string): Promise<TransactionData | undefined> {
+    const sql = postgres(databaseUrl);
+    try {
+      const result = await sql`
+        SELECT * FROM transactions WHERE paypal_order_id = ${paypalOrderId};
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
+  }
+
+  /**
+   * Updates a transaction's status and optionally sets transaction_id, payment provider IDs, or error.
    * @param databaseUrl - PostgreSQL connection string
    * @param idempotencyKey - The idempotency key of the transaction to update
    * @param status - The new status
    * @param transactionId - Optional transaction ID from the payment provider
    * @param error - Optional error message if the transaction failed
+   * @param stripePaymentIntentId - Optional Stripe PaymentIntent ID
+   * @param paypalOrderId - Optional PayPal Order ID
    * @returns The updated transaction data or undefined if not found
    */
   static async updateStatus(
@@ -83,13 +125,20 @@ class Transaction {
     idempotencyKey: string,
     status: string,
     transactionId: string | null = null,
-    error: string | null = null
+    error: string | null = null,
+    stripePaymentIntentId: string | null = null,
+    paypalOrderId: string | null = null
   ): Promise<TransactionData | undefined> {
     const sql = postgres(databaseUrl);
     try {
       const result = await sql`
         UPDATE transactions
-        SET status = ${status}, transaction_id = ${transactionId}, error = ${error}, updated_at = NOW()
+        SET status = ${status},
+            transaction_id = ${transactionId},
+            error = ${error},
+            stripe_payment_intent_id = COALESCE(${stripePaymentIntentId}, stripe_payment_intent_id),
+            paypal_order_id = COALESCE(${paypalOrderId}, paypal_order_id),
+            updated_at = NOW()
         WHERE idempotency_key = ${idempotencyKey}
         RETURNING *;
       `;
