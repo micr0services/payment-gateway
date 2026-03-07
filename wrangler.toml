@@ -12,6 +12,24 @@ workers_dev = true
 [build]
 command = "npm ci && npm run build"
 
+# Observability Configuration
+[observability]
+enabled = true
+
+# Analytics Engine for metrics and custom events
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "payment-gateway-analytics"
+
 [env.production]
 workers_dev = false
 route = "payments.example.com/*"
+
+# Production observability settings
+[env.production.observability]
+enabled = true
+
+# Production Analytics Engine
+[[env.production.analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "payment-gateway-prod-analytics"
