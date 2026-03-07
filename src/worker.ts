@@ -354,6 +354,15 @@ app.get('/api/openapi.json', (c) => {
           summary: 'Stripe Webhook',
           description: 'Handle Stripe webhook events for payment updates',
           tags: ['Webhooks'],
+          parameters: [
+            {
+              name: 'stripe-signature',
+              in: 'header',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Stripe webhook signature for verification'
+            }
+          ],
           requestBody: {
             required: true,
             content: {
