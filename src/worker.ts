@@ -349,6 +349,54 @@ app.get('/api/openapi.json', (c) => {
           }
         }
       },
+      '/api/payments/stripe/{paymentIntentId}/confirm': {
+        post: {
+          summary: 'Confirm Stripe Payment',
+          description: 'Confirm a Stripe PaymentIntent directly using a test payment method (for testing purposes)',
+          tags: ['Payments'],
+          parameters: [
+            {
+              name: 'paymentIntentId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Stripe payment intent ID'
+            }
+          ],
+          requestBody: {
+            required: false,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    paymentMethodId: { type: 'string', default: 'pm_card_visa', description: 'Payment method ID (defaults to test card)' }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            '200': {
+              description: 'Payment confirmed successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      paymentIntentId: { type: 'string' },
+                      status: { type: 'string' },
+                      message: { type: 'string' }
+                    }
+                  }
+                }
+              }
+            },
+            '400': { description: 'Bad request' },
+            '500': { description: 'Internal server error' }
+          }
+        }
+      },
       '/api/webhooks/stripe': {
         post: {
           summary: 'Stripe Webhook',

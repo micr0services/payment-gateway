@@ -111,12 +111,27 @@ async function getStripePaymentStatus(stripeSecretKey: string, paymentIntentId: 
 }
 
 /**
- * Creates a refund for a Stripe PaymentIntent.
+ * Confirms a Stripe PaymentIntent directly (for testing purposes).
  * @param stripeSecretKey - The Stripe secret key
- * @param paymentIntentId - The ID of the PaymentIntent to refund
- * @param amount - Optional amount to refund (full refund if not specified)
- * @returns Promise resolving to refund result
+ * @param paymentIntentId - The ID of the PaymentIntent to confirm
+ * @param paymentMethodId - Optional payment method ID (defaults to test card)
+ * @returns Promise resolving to confirmation result
  */
+async function confirmStripePayment(
+  stripeSecretKey: string,
+  paymentIntentId: string,
+  paymentMethodId: string = 'pm_card_visa'
+): Promise<PaymentResult> {
+  try {
+    const stripe = getStripeClient(stripeSecretKey);
+    const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId, {
+      payment_method: paymentMethodId
+    });
+    return { success: true, status: paymentIntent.status, id: paymentIntent.id };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
 async function refundStripePayment(
   stripeSecretKey: string,
   paymentIntentId: string,
@@ -144,5 +159,6 @@ export {
   processStripePayment,
   cancelStripePayment,
   getStripePaymentStatus,
-  refundStripePayment
+  refundStripePayment,
+  confirmStripePayment
 };

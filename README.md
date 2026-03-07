@@ -100,9 +100,14 @@ GET /api/transactions?gateway=stripe&status=completed
 The specification currently documents the following operations:
 
 - **POST /api/payments/stripe** – create a Stripe payment intent
+- **GET /api/payments/stripe/{paymentIntentId}** – get payment status
+- **POST /api/payments/stripe/{paymentIntentId}/cancel** – cancel payment
+- **POST /api/payments/stripe/{paymentIntentId}/confirm** – confirm payment (testing)
+- **POST /api/payments/stripe/{paymentIntentId}/refund** – refund payment
 - **POST /api/payments/paypal** – create a PayPal order
 - **POST /api/payments/paypal/confirm/{orderId}** – capture a PayPal order
-- **GET /api/payments/transactions** – list transactions with optional query filters
+- **GET /api/transactions** – list transactions with optional query filters
+- **POST /api/webhooks/stripe** – handle Stripe webhooks
 
 
 ## API Usage Guide
@@ -208,6 +213,48 @@ The system ensures that identical requests with the same Idempotency-Key won't c
 
 Failed payments are automatically retried up to 3 times with exponential backoff. If all retries fail, the transaction is marked as 'failed' in the database.
 
+## Testing Stripe Payments
+
+For testing purposes, you can confirm PaymentIntents directly without a frontend:
+
+### Direct Payment Confirmation
+
+1. **Create Payment Intent** (as usual):
+   ```bash
+   curl -X POST https://your-worker-url.workers.dev/api/payments/stripe \
+     -H "Content-Type: application/json" \
+     -H "Idempotency-Key: test-payment-001" \
+     -d '{
+       "amount": 5000,
+       "currency": "usd"
+     }'
+   ```
+
+2. **Confirm Payment Directly** (bypasses frontend):
+   ```bash
+   curl -X POST https://your-worker-url.workers.dev/api/payments/stripe/{paymentIntentId}/confirm \
+     -H "Content-Type: application/json" \
+     -d '{
+       "paymentMethodId": "pm_card_visa"
+     }'
+   ```
+
+3. **Webhook Trigger**: After confirmation, your webhook endpoint will receive `payment_intent.succeeded`
+
+### Test Payment Methods
+
+Stripe provides several test payment methods:
+- `pm_card_visa` - Visa test card
+- `pm_card_mastercard` - Mastercard test card
+- `pm_card_amex` - American Express test card
+
+### Using Stripe CLI for Webhook Testing
+
+1. Install Stripe CLI
+2. Login: `stripe login`
+3. Forward webhooks: `stripe listen --forward-to https://your-worker-url.workers.dev/api/webhooks/stripe`
+4. Use the webhook signing secret in your environment variables
+
 ## API Endpoints
 
 ### Stripe Payment
@@ -215,12 +262,23 @@ POST /api/payments/stripe
 Headers: Idempotency-Key
 Body: { "amount": 1000, "currency": "usd", "metadata": {} }
 
+GET /api/payments/stripe/{paymentIntentId}
+POST /api/payments/stripe/{paymentIntentId}/cancel
+POST /api/payments/stripe/{paymentIntentId}/confirm
+POST /api/payments/stripe/{paymentIntentId}/refund
+
 ### PayPal Payment
 POST /api/payments/paypal
 Headers: Idempotency-Key
 Body: { "amount": 1000, "currency": "USD", "metadata": {} }
 
 POST /api/payments/paypal/confirm/:orderId
+
+### Transactions
+GET /api/transactions
+
+### Webhooks
+POST /api/webhooks/stripe
 
 ## Security
 

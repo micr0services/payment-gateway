@@ -4,7 +4,8 @@ import {
   processStripePayment,
   cancelStripePayment,
   getStripePaymentStatus,
-  refundStripePayment
+  refundStripePayment,
+  confirmStripePayment
 } from '../lib/stripePayment';
 import idempotencyMiddleware from '../middleware/idempotency';
 import retry from 'async-retry';
@@ -152,6 +153,33 @@ router.post('/stripe/:paymentIntentId/refund', async (c) => {
       refundId: result.id,
       status: result.status,
       message: 'Refund processed successfully'
+    });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// Confirm payment (for testing purposes)
+router.post('/stripe/:paymentIntentId/confirm', async (c) => {
+  const { paymentIntentId } = c.req.param();
+  const { paymentMethodId = 'pm_card_visa' } = await c.req.json();
+
+  try {
+    const result = await confirmStripePayment(c.env.STRIPE_SECRET_KEY, paymentIntentId, paymentMethodId);
+    if (!result.success) {
+      return c.json({ error: result.error }, 400);
+    }
+
+    // Update transaction status
+    const transaction = await Transaction.findByStripePaymentIntentId(c.env.DATABASE_URL, paymentIntentId);
+    if (transaction) {
+      await Transaction.updateStatus(c.env.DATABASE_URL, transaction.idempotency_key, 'completed');
+    }
+
+    return c.json({
+      paymentIntentId: result.id,
+      status: result.status,
+      message: 'Payment confirmed successfully'
     });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
