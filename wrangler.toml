@@ -27,6 +27,7 @@ PAYPAL_ENVIRONMENT = "sandbox"
 PORT = "3000"
 JWT_SECRET = "wilfred_me_secret_key"
 WEBHOOK_URL = "https://payment-gateway.kimaniwilfred95.workers.dev/api/webhooks/stripe"
+FRONTEND_BASE_URL = "https://paygateway123.netlify.app"
 
 [env.production]
 workers_dev = false

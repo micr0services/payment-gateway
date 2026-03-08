@@ -85,8 +85,9 @@ function validatePaypalPaymentParams(amount: number, currency: string): void {
  * @param paypalClientSecret - The PayPal client secret
  * @param amount - The amount in dollars (not cents)
  * @param currency - The currency code
+ * @param frontendBaseUrl - The base URL for frontend success/cancel pages
  */
-async function processPaypalPayment(paypalEnvironment: string, paypalClientId: string, paypalClientSecret: string, amount: number, currency: string): Promise<PaypalResult> {
+async function processPaypalPayment(paypalEnvironment: string, paypalClientId: string, paypalClientSecret: string, amount: number, currency: string, frontendBaseUrl: string): Promise<PaypalResult> {
   try {
     validatePaypalPaymentParams(amount, currency);
 
@@ -101,6 +102,10 @@ async function processPaypalPayment(paypalEnvironment: string, paypalClientId: s
       },
       body: JSON.stringify({
         intent: 'CAPTURE',
+        application_context: {
+          return_url: `${frontendBaseUrl}/paypal/success`,
+          cancel_url: `${frontendBaseUrl}/paypal/cancel`
+        },
         purchase_units: [{
           amount: {
             currency_code: currency.toUpperCase(),

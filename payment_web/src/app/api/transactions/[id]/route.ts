@@ -4,10 +4,11 @@ const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || 'https://payment-gatewa
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const response = await fetch(`${WORKER_URL}/api/transactions/${params.id}`, {
+    const { id } = await params;
+    const response = await fetch(`${WORKER_URL}/api/transactions/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

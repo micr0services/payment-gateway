@@ -11,6 +11,7 @@ const router = new Hono<{
     PAYPAL_CLIENT_ID: string;
     PAYPAL_CLIENT_SECRET: string;
     DATABASE_URL: string;
+    FRONTEND_BASE_URL: string;
   };
   Variables: {
     idempotencyKey: string;
@@ -40,7 +41,7 @@ router.post('/paypal', idempotencyMiddleware, async (c) => {
     }
 
     const result = await retry(async (bail) => {
-      const paymentResult = await processPaypalPayment(c.env.PAYPAL_ENVIRONMENT, c.env.PAYPAL_CLIENT_ID, c.env.PAYPAL_CLIENT_SECRET, amount, currency);
+      const paymentResult = await processPaypalPayment(c.env.PAYPAL_ENVIRONMENT, c.env.PAYPAL_CLIENT_ID, c.env.PAYPAL_CLIENT_SECRET, amount, currency, c.env.FRONTEND_BASE_URL);
       if (!paymentResult.success) {
         throw new Error(paymentResult.error);
       }
