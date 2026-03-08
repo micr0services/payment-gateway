@@ -61,19 +61,19 @@ router.post('/stripe', idempotencyMiddleware, async (c) => {
       return paymentResult;
     }, { retries: 3 });
 
-    // Update transaction with Stripe PaymentIntent ID
+    // Update transaction with Stripe Checkout Session ID
     await Transaction.updateStatus(
       c.env.DATABASE_URL,
       c.get('idempotencyKey'),
       'pending', // Status remains pending until webhook confirms
       result.id,
       null,
-      result.id // stripe_payment_intent_id
+      result.id // stripe_payment_intent_id (using for session ID)
     );
 
     return c.json({
-      clientSecret: result.clientSecret,
-      transactionId: result.id,
+      checkoutUrl: result.checkoutUrl,
+      sessionId: result.id,
       status: 'pending'
     });
   } catch (error: any) {

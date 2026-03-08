@@ -16,6 +16,7 @@ interface PaymentResult {
   id?: string;
   error?: string;
   status?: string;
+  checkoutUrl?: string;
 }
 
 /**
@@ -38,7 +39,7 @@ function validatePaymentParams(amount: number, currency: string): void {
 }
 
 /**
- * Processes a payment using Stripe by creating a PaymentIntent.
+ * Processes a payment using Stripe by creating a Checkout Session.
  * @param stripeSecretKey - The Stripe secret key
  * @param amount - The amount in smallest currency unit (cents for USD)
  * @param currency - The currency code (e.g., 'usd')
@@ -58,20 +59,32 @@ async function processStripePayment(
 
     const stripe = getStripeClient(stripeSecretKey);
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: currency.toLowerCase(),
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{
+        price_data: {
+          currency: currency.toLowerCase(),
+          product_data: {
+            name: 'Payment',
+            description: metadata?.description || 'Payment transaction',
+          },
+          unit_amount: amount,
+        },
+        quantity: 1,
+      }],
+      mode: 'payment',
+      success_url: `${process.env.WEB_URL || 'http://localhost:3000'}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.WEB_URL || 'http://localhost:3000'}/cancel`,
       metadata,
-      automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
     }, {
       idempotencyKey: idempotencyKey || `stripe-${Date.now()}-${Math.random()}`
     });
 
     return {
       success: true,
-      clientSecret: paymentIntent.client_secret,
-      id: paymentIntent.id,
-      status: paymentIntent.status
+      id: session.id,
+      checkoutUrl: session.url,
+      status: session.status
     };
   } catch (error: any) {
     return { success: false, error: error.message };
