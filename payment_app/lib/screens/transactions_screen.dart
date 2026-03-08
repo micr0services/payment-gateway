@@ -554,7 +554,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               ),
           ],
         ),
-  };
+      ),
+    );
+  }
 
   Widget _buildStatCard({
     required String title,
