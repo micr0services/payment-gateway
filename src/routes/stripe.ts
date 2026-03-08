@@ -5,7 +5,8 @@ import {
   cancelStripePayment,
   getStripePaymentStatus,
   refundStripePayment,
-  confirmStripePayment
+  confirmStripePayment,
+  getStripeClient
 } from '../lib/stripePayment';
 import idempotencyMiddleware from '../middleware/idempotency';
 import retry from 'async-retry';

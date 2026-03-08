@@ -173,5 +173,6 @@ export {
   cancelStripePayment,
   getStripePaymentStatus,
   refundStripePayment,
-  confirmStripePayment
+  confirmStripePayment,
+  getStripeClient
 };

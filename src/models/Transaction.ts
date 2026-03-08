@@ -56,6 +56,24 @@ class Transaction {
   }
 
   /**
+   * Finds a transaction by its ID.
+   * @param databaseUrl - PostgreSQL connection string
+   * @param id - The transaction ID
+   * @returns The transaction data or undefined if not found
+   */
+  static async findById(databaseUrl: string, id: number): Promise<TransactionData | undefined> {
+    const sql = postgres(databaseUrl);
+    try {
+      const result = await sql`
+        SELECT * FROM transactions WHERE id = ${id};
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
+  }
+
+  /**
    * Finds a transaction by its idempotency key.
    * @param databaseUrl - PostgreSQL connection string
    * @param idempotencyKey - The unique idempotency key

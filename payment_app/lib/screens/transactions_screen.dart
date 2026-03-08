@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/payment_provider.dart';
 import '../models/transaction.dart';
+import 'transaction_details_screen.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -447,6 +448,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         final formattedAmount = _formatAmount(transaction.amount, transaction.currency);
 
                         return DataRow(
+                          onSelectChanged: (_) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => TransactionDetailsScreen(transaction: transaction),
+                              ),
+                            );
+                          },
                           cells: [
                             DataCell(Row(
                               children: [

@@ -43,4 +43,23 @@ router.get('/transactions', async (c) => {
   }
 });
 
+router.get('/transactions/:id', async (c) => {
+  try {
+    const id = parseInt(c.req.param('id'), 10);
+    if (isNaN(id)) {
+      return c.json({ error: 'Invalid transaction ID' }, 400);
+    }
+
+    const transaction = await Transaction.findById(c.env.DATABASE_URL, id);
+    if (!transaction) {
+      return c.json({ error: 'Transaction not found' }, 404);
+    }
+
+    return c.json(transaction);
+  } catch (error: any) {
+    console.error('Error fetching transaction', error);
+    return c.json({ error: 'Unable to fetch transaction' }, 500);
+  }
+});
+
 export default router;

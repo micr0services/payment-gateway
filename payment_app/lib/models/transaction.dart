@@ -8,6 +8,8 @@ class Transaction {
   final String currency;
   final String status;
   final String? transactionId;
+  final String? stripePaymentIntentId;
+  final String? paypalOrderId;
   final String? error;
   final Map<String, dynamic>? metadata;
   final DateTime createdAt;
@@ -21,6 +23,8 @@ class Transaction {
     required this.currency,
     required this.status,
     this.transactionId,
+    this.stripePaymentIntentId,
+    this.paypalOrderId,
     this.error,
     this.metadata,
     required this.createdAt,
@@ -49,6 +53,8 @@ class Transaction {
       currency: json['currency'],
       status: json['status'],
       transactionId: json['transaction_id'],
+      stripePaymentIntentId: json['stripe_payment_intent_id'],
+      paypalOrderId: json['paypal_order_id'],
       error: json['error'],
       metadata: metadata,
       createdAt: DateTime.parse(json['created_at']),
