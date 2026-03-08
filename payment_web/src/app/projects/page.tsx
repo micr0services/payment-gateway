@@ -4,6 +4,24 @@ import Link from 'next/link';
 
 const projects = [
   {
+    id: 'vico',
+    title: 'Vico',
+    description: 'A comprehensive sports ecosystem platform designed to serve tennis players, coaches, referees, staff, and organizations. Built as a full-stack application combining Next.js web interface, Flutter mobile app, Prisma ORM backend, and gRPC communication.',
+    technologies: ['Next.js', 'Flutter', 'Prisma', 'PostgreSQL', 'gRPC', 'TypeScript'],
+    features: [
+      'Multi-role authentication (Players, Coaches, Referees, Organizations)',
+      'Club and organization management with RBAC',
+      'Membership tiers and ranking system',
+      'Tournament and event management',
+      'Court booking and inventory tracking',
+      'Real-time chat and analytics',
+      'Financial accounting and gamification'
+    ],
+    status: 'In Development',
+    github: 'https://github.com/kimaniwilfred95/payment-gateway',
+    demo: null
+  },
+  {
     id: 'payledger',
     title: 'PayLedger',
     description: 'A comprehensive payment gateway supporting multiple providers including PayPal and Stripe with advanced features like idempotency, webhooks, and transaction management.',
@@ -65,6 +83,65 @@ const projects = [
     ],
     status: 'Research',
     github: null,
+    demo: null
+  },
+   {
+    id: 'wilcache',
+    title: 'Wilcache',
+    description: 'A high-performance, multi-layered caching microservice designed for modern applications. It provides a simple HTTP(S) API for storing and retrieving cached data with advanced features like multi-tier caching, API key management, rate limiting, and automatic compression.',
+    technologies: ['Node.js', 'TypeScript', 'Redis', 'LevelDB', 'Fastify'],
+    features: [
+      'Multi-tier caching (L1 memory, L2 Redis, persistent LevelDB)',
+      'RESTful HTTP API with JSON support',
+      'API key authentication and rate limiting',
+      'Automatic data compression',
+      'Hotkey detection and stale-while-revalidate',
+      'Singleflight requests to prevent cache stampedes',
+      'Admin endpoints for key management',
+      'Comprehensive metrics and monitoring'
+    ],
+    status: 'Active',
+    github: 'https://github.com/kimaniwilfred95/payment-gateway',
+    demo: null
+  },
+  {
+    id: 'kafka-notification-service',
+    title: 'Kafka Notification Service',
+    description: 'A comprehensive Docker-based notification service built with Node.js, TypeScript, and Kafka for handling real-time notifications across multiple channels including email, SMS, and more. It features robust integration with various providers, database persistence, caching, template rendering, and a REST API for seamless notification management.',
+    technologies: ['Node.js', 'TypeScript', 'Kafka', 'Docker', 'PostgreSQL', 'Redis'],
+    features: [
+      'Kafka integration with producer and consumer implementations',
+      'REST API with endpoints for single and batch notifications',
+      'Multi-channel support (email, SMS, push, in-app, webhook)',
+      'Integration with multiple email and SMS providers',
+      'PostgreSQL database with connection pooling',
+      'Redis-based caching with retry mechanisms',
+      'Dynamic template rendering system',
+      'Comprehensive logging with Winston',
+      'Docker Compose setup with full containerization',
+      'Swagger API documentation'
+    ],
+    status: 'Active',
+    github: 'https://github.com/kimaniwilfred95/payment-gateway',
+    demo: null
+  },
+  {
+    id: 'anchor-routine',
+    title: 'Anchor Routine — Personal Productivity Dashboard',
+    description: 'A comprehensive personal productivity and routine management application built with Next.js, designed to help you maintain daily routines, track coding activities, manage notifications, and achieve your goals.',
+    technologies: ['Next.js', 'TypeScript', 'PostgreSQL', 'Prisma', 'Tailwind CSS', 'Docker'],
+    features: [
+      'Routine management with customizable time blocks and strict mode',
+      'Coding session tracking with language logging and achievement system',
+      'Smart notifications via email and SMS with template customization',
+      'Quick actions for frequent tasks with activity logging',
+      'Note taking with rich coding notes and tagging system',
+      'Activity analytics with weekly statistics and habit tracking',
+      'Automated scheduling via cron jobs for timely reminders',
+      'Docker containerization with docker-compose deployment'
+    ],
+    status: 'Active',
+    github: 'https://github.com/kimaniwilfred95/payment-gateway',
     demo: null
   }
 ];

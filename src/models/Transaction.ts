@@ -185,42 +185,41 @@ class Transaction {
   } = {}): Promise<TransactionData[]> {
     const sql = postgres(databaseUrl);
     try {
-      let conditions: string[] = [];
-      let values: any[] = [];
+      let query = sql`SELECT * FROM transactions`;
+      const conditions: any[] = [];
 
       if (filters.gateway) {
-        conditions.push('gateway = ?');
-        values.push(filters.gateway);
+        conditions.push(sql`gateway = ${filters.gateway}`);
       }
       if (filters.status) {
-        conditions.push('status = ?');
-        values.push(filters.status);
+        conditions.push(sql`status = ${filters.status}`);
       }
       if (filters.minAmount !== undefined) {
-        conditions.push('amount >= ?');
-        values.push(filters.minAmount);
+        conditions.push(sql`amount >= ${filters.minAmount}`);
       }
       if (filters.maxAmount !== undefined) {
-        conditions.push('amount <= ?');
-        values.push(filters.maxAmount);
+        conditions.push(sql`amount <= ${filters.maxAmount}`);
       }
       if (filters.startDate) {
-        conditions.push('created_at >= ?');
-        values.push(filters.startDate);
+        conditions.push(sql`created_at >= ${filters.startDate}`);
       }
       if (filters.endDate) {
-        conditions.push('created_at <= ?');
-        values.push(filters.endDate);
+        conditions.push(sql`created_at <= ${filters.endDate}`);
       }
       if (filters.idempotencyKey) {
-        conditions.push('idempotency_key = ?');
-        values.push(filters.idempotencyKey);
+        conditions.push(sql`idempotency_key = ${filters.idempotencyKey}`);
       }
 
-      const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-      const query = `SELECT * FROM transactions ${whereClause} ORDER BY created_at DESC`;
+      if (conditions.length > 0) {
+        query = sql`${query} WHERE ${conditions[0]}`;
+        for (let i = 1; i < conditions.length; i++) {
+          query = sql`${query} AND ${conditions[i]}`;
+        }
+      }
 
-      const result = await sql.unsafe(query, values);
+      query = sql`${query} ORDER BY created_at DESC`;
+
+      const result = await query;
       return result as unknown as TransactionData[];
     } finally {
       await sql.end();
