@@ -16,6 +16,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@hono/swagger-ui": "^0.6.0",
     "@hono/zod-openapi": "^1.2.2",
     "@paypal/paypal-server-sdk": "^2.2.0",
