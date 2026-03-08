@@ -7,6 +7,7 @@ export default function IntegrationsPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     company: '',
     service: '',
     message: ''
@@ -39,6 +40,7 @@ export default function IntegrationsPage() {
         setFormData({
           name: '',
           email: '',
+          phone: '',
           company: '',
           service: '',
           message: ''
@@ -55,14 +57,14 @@ export default function IntegrationsPage() {
 
   if (submitted) {
     return (
-      <div className="flex items-center justify-center p-8 relative overflow-hidden min-h-[calc(100vh-60px)]">
-        <div className="relative z-10 w-full max-w-[600px] text-center">
+      <div className="flex items-center justify-center p-4 sm:p-8 relative overflow-hidden min-h-[calc(100vh-60px)]">
+        <div className="relative z-10 w-full max-w-[600px] text-center px-4 sm:px-0">
           <div className="text-xs uppercase tracking-[0.25em] text-gold mb-3 flex items-center justify-center gap-2">
             <span className="text-[0.4rem]">◆</span>
             Inquiry Sent
           </div>
-          <h1 className="text-4xl font-light leading-tight font-serif mb-6">Thank You!</h1>
-          <p className="text-text-muted mb-8">
+          <h1 className="text-3xl sm:text-4xl font-light leading-tight font-serif mb-6">Thank You!</h1>
+          <p className="text-text-muted mb-8 text-sm sm:text-base">
             We've received your integration inquiry and will get back to you within 24 hours.
           </p>
           <Link
@@ -80,20 +82,20 @@ export default function IntegrationsPage() {
   }
 
   return (
-    <div className="flex items-center justify-center p-8 relative overflow-hidden min-h-[calc(100vh-60px)]">
-      <div className="relative z-10 w-full max-w-[600px]">
-        <div className="text-center mb-12">
+    <div className="flex items-center justify-center p-4 sm:p-8 relative overflow-hidden min-h-[calc(100vh-60px)]">
+      <div className="relative z-10 w-full max-w-[600px] px-4 sm:px-0">
+        <div className="text-center mb-8 sm:mb-12">
           <div className="text-xs uppercase tracking-[0.25em] text-gold mb-3 flex items-center justify-center gap-2">
             <span className="text-[0.4rem]">◆</span>
             Integration Services
           </div>
-          <h1 className="text-4xl font-light leading-tight font-serif">Inquire About<br />Integrations</h1>
-          <p className="text-text-muted mt-4">
+          <h1 className="text-3xl sm:text-4xl font-light leading-tight font-serif">Inquire About<br />Integrations</h1>
+          <p className="text-text-muted mt-4 text-sm sm:text-base">
             Need custom integrations or software services? Let us know your requirements.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-sm shadow-[0_0_0_1px_rgba(201,168,76,0.08),0_40px_80px_rgba(0,0,0,0.6),0_0_120px_rgba(201,168,76,0.04)] p-8">
+        <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-sm shadow-[0_0_0_1px_rgba(201,168,76,0.08),0_40px_80px_rgba(0,0,0,0.6),0_0_120px_rgba(201,168,76,0.04)] p-6 sm:p-8">
           <div className="space-y-6">
             {/* Name */}
             <div>
@@ -120,6 +122,20 @@ export default function IntegrationsPage() {
                 required
                 className="w-full bg-surface-2 border border-border rounded-sm p-3.5 text-text font-mono text-sm placeholder:text-text-muted focus:outline-none focus:border-[rgba(201,168,76,0.4)] focus:shadow-[0_0_0_3px_rgba(201,168,76,0.15)]"
                 placeholder="your.email@company.com"
+              />
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label className="block text-xs uppercase tracking-[0.2em] text-text mb-1.5">Phone Number</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                className="w-full bg-surface-2 border border-border rounded-sm p-3.5 text-text font-mono text-sm placeholder:text-text-muted focus:outline-none focus:border-[rgba(201,168,76,0.4)] focus:shadow-[0_0_0_3px_rgba(201,168,76,0.15)]"
+                placeholder="+254 700 000 000"
               />
             </div>
 
@@ -186,7 +202,7 @@ export default function IntegrationsPage() {
           </div>
         </form>
 
-        <div className="mt-8 text-center">
+        <div className="mt-6 sm:mt-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-text-muted hover:text-text transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

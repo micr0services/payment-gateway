@@ -41,16 +41,17 @@ app.post('/sms', async (c) => {
 // Integration inquiry endpoint that sends SMS
 app.post('/integrations', async (c) => {
   try {
-    const { name, phone, company, service, message } = await c.req.json();
+    const { name, email, phone, company, service, message } = await c.req.json();
 
     // Validate required fields
-    if (!name || !phone || !service || !message) {
+    if (!name || !email || !phone || !service || !message) {
       return c.json({ error: 'Missing required fields' }, 400);
     }
 
     // Create SMS content for notification
     const notificationSMS = `New Integration Inquiry
 Name: ${name}
+Email: ${email}
 Phone: ${phone}
 Company: ${company || 'Not provided'}
 Service: ${service}
@@ -60,22 +61,18 @@ Message: ${message.replace(/\n/g, ' ')}`;
     const confirmationSMS = `Thank you ${name} for your inquiry about ${service}. We'll get back to you within 24 hours. Your request: ${message.replace(/\n/g, ' ')}`;
 
     console.log('Integration inquiry processed:', {
-      inquiry: { name, phone, company, service, message },
+      inquiry: { name, email, phone, company, service, message },
       notificationSMS,
       confirmationSMS
     });
 
-    // Send SMS to admin (you'll need to set ADMIN_PHONE environment variable)
-    const adminPhone = process.env.ADMIN_PHONE;
-    if (adminPhone) {
-      try {
-        await sendSMS(adminPhone, 'integration-notification', notificationSMS);
-        console.log('SMS notification sent to admin');
-      } catch (smsError) {
-        console.error('Failed to send SMS notification to admin:', smsError);
-      }
-    } else {
-      console.log('ADMIN_PHONE not set, skipping admin SMS notification');
+    // Send SMS to admin (hardcoded phone number)
+    const adminPhone = '+254793056960';
+    try {
+      await sendSMS(adminPhone, 'integration-notification', notificationSMS);
+      console.log('SMS notification sent to admin');
+    } catch (smsError) {
+      console.error('Failed to send SMS notification to admin:', smsError);
     }
 
     // Send confirmation SMS to user

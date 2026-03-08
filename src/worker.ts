@@ -6,7 +6,7 @@ import paypalRouter from './routes/paypal';
 import paypalConfirmRouter from './routes/paypalConfirm';
 import transactionsRouter from './routes/transactions';
 import webhooksRouter from './routes/webhooks';
-import emailRouter from './routes/email';
+import smsRouter from './routes/sms';
 
 const app = new Hono<{
   Bindings: {
@@ -36,7 +36,7 @@ app.route('/api/payments', paypalRouter);
 app.route('/api/payments', paypalConfirmRouter);
 app.route('/api', transactionsRouter);
 app.route('/api/webhooks', webhooksRouter);
-app.route('/api', emailRouter);
+app.route('/api', smsRouter);
 
 // OpenAPI specification
 app.get('/api/openapi.json', (c) => {

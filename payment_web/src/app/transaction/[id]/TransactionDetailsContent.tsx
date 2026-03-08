@@ -52,168 +52,176 @@ export default function TransactionDetailsContent({ transactionId }: { transacti
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency.toUpperCase(),
-    }).format(amount / 100); // Assuming amount is in cents
+    }).format(amount / 100);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'text-green-600 bg-green-100';
+        return 'text-success bg-success/10 border border-success/20';
       case 'pending':
-        return 'text-yellow-600 bg-yellow-100';
+        return 'text-gold bg-gold/10 border border-gold/20';
       case 'failed':
-        return 'text-red-600 bg-red-100';
+        return 'text-error bg-error/10 border border-error/20';
       case 'cancelled':
-        return 'text-gray-600 bg-gray-100';
+        return 'text-text-muted bg-text-muted/10 border border-text-muted/20';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'text-text-muted bg-text-muted/10 border border-text-muted/20';
     }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2 text-gray-600">Loading transaction details...</span>
+      <div className="min-h-screen bg-obsidian font-mono text-text p-0">
+        <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
+        <main className="max-w-full mx-auto p-12">
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold"></div>
+            <span className="ml-2 text-text">Loading transaction details...</span>
+          </div>
+        </main>
       </div>
     );
   }
 
   if (error || !transaction) {
     return (
-      <div className="text-center py-12">
-        <div className="text-red-600 text-lg font-semibold mb-4">Error</div>
-        <p className="text-gray-600 mb-6">{error || 'Transaction not found'}</p>
-        <button
-          onClick={() => router.back()}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-        >
-          Go Back
-        </button>
+      <div className="min-h-screen bg-obsidian font-mono text-text p-0">
+        <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
+        <main className="max-w-full mx-auto p-12">
+          <div className="text-center py-12">
+            <div className="text-error text-lg font-semibold mb-4">Error</div>
+            <p className="text-text-muted mb-6">{error || 'Transaction not found'}</p>
+            <button
+              onClick={() => router.back()}
+              className="bg-gold text-obsidian px-4 py-2 rounded-none hover:bg-gold-light transition-colors duration-200 text-sm uppercase tracking-[0.2em]"
+            >
+              Go Back
+            </button>
+          </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-      <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">
+    <div className="min-h-screen bg-obsidian font-mono text-text p-0">
+      <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
+
+      <main className="max-w-full mx-auto p-12">
+        {/* Header */}
+        <div className="mb-12 animate-[fadeUp_0.6s_ease_both]">
+          <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3 flex items-center gap-3">
+            <div className="w-6 h-px bg-gold" />
             Transaction Details
-          </h1>
-          <button
-            onClick={() => router.back()}
-            className="text-gray-600 hover:text-gray-800"
-          >
-            ← Back to Transactions
-          </button>
+          </div>
+          <h1 className="font-serif text-5xl font-light tracking-[0.02em] leading-none">Transaction<br />#{transaction.id}</h1>
         </div>
-      </div>
 
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-              Basic Information
-            </h2>
+        <div className="space-y-8">
+          {/* Back Button */}
+          <div className="animate-[fadeUp_0.6s_0.1s_ease_both]">
+            <button
+              onClick={() => router.back()}
+              className="text-text-muted hover:text-gold transition-colors duration-200 flex items-center gap-2 text-sm uppercase tracking-[0.2em]"
+            >
+              ← Back to Transactions
+            </button>
+          </div>
 
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Transaction ID</label>
-                <p className="mt-1 text-sm text-gray-900 font-mono">{transaction.id}</p>
+          {/* Row 1 — Status / Amount / Gateway */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border border border-border animate-[fadeUp_0.6s_0.2s_ease_both]">
+            <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+              <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Status</div>
+              <span className={`inline-flex w-fit px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(transaction.status)}`}>
+                {transaction.status.toUpperCase()}
+              </span>
+            </div>
+            <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+              <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Amount</div>
+              <div className="font-serif text-3xl font-light text-gold-light leading-none">
+                {formatAmount(transaction.amount, transaction.currency)}
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Idempotency Key</label>
-                <p className="mt-1 text-sm text-gray-900 font-mono break-all">{transaction.idempotency_key}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Gateway</label>
-                <p className="mt-1 text-sm text-gray-900 capitalize">{transaction.gateway}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Amount</label>
-                <p className="mt-1 text-lg font-semibold text-gray-900">
-                  {formatAmount(transaction.amount, transaction.currency)}
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Status</label>
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(transaction.status)}`}>
-                  {transaction.status.toUpperCase()}
-                </span>
-              </div>
+            </div>
+            <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+              <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Gateway</div>
+              <div className="text-lg font-semibold text-text capitalize">{transaction.gateway}</div>
             </div>
           </div>
 
-          {/* Gateway Specific Information */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-              Gateway Details
-            </h2>
+          {/* Row 2 — Internal ID / Idempotency Key / Created At */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border border border-border animate-[fadeUp_0.6s_0.3s_ease_both]">
+            <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+              <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Transaction ID</div>
+              <div className="text-sm text-text font-mono">{transaction.id}</div>
+            </div>
+            <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+              <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Idempotency Key</div>
+              <div className="text-sm text-text font-mono break-all">{transaction.idempotency_key}</div>
+            </div>
+            <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+              <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Created At</div>
+              <div className="text-sm text-text">{formatDate(transaction.created_at)}</div>
+            </div>
+          </div>
 
-            <div className="space-y-3">
+          {/* Row 3 — Gateway ID / External Transaction ID / Updated At */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border border border-border animate-[fadeUp_0.6s_0.4s_ease_both]">
+            <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
               {transaction.gateway === 'stripe' && transaction.stripe_payment_intent_id && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Stripe Payment Intent ID</label>
-                  <p className="mt-1 text-sm text-gray-900 font-mono">{transaction.stripe_payment_intent_id}</p>
-                </div>
+                <>
+                  <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Stripe Payment Intent ID</div>
+                  <div className="text-sm text-text font-mono break-all">{transaction.stripe_payment_intent_id}</div>
+                </>
               )}
-
               {transaction.gateway === 'paypal' && transaction.paypal_order_id && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">PayPal Order ID</label>
-                  <p className="mt-1 text-sm text-gray-900 font-mono">{transaction.paypal_order_id}</p>
-                </div>
+                <>
+                  <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">PayPal Order ID</div>
+                  <div className="text-sm text-text font-mono break-all">{transaction.paypal_order_id}</div>
+                </>
               )}
-
-              {transaction.transaction_id && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Transaction ID</label>
-                  <p className="mt-1 text-sm text-gray-900 font-mono">{transaction.transaction_id}</p>
-                </div>
-              )}
-
-              {transaction.error && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Error</label>
-                  <p className="mt-1 text-sm text-red-600">{transaction.error}</p>
-                </div>
+              {!((transaction.gateway === 'stripe' && transaction.stripe_payment_intent_id) || (transaction.gateway === 'paypal' && transaction.paypal_order_id)) && (
+                <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text-muted mb-3">Gateway ID</div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* Metadata */}
-        {transaction.metadata && Object.keys(transaction.metadata).length > 0 && (
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">
-              Metadata
-            </h2>
-            <div className="bg-gray-50 rounded-md p-4">
-              <pre className="text-sm text-gray-800 whitespace-pre-wrap">
-                {JSON.stringify(transaction.metadata, null, 2)}
-              </pre>
+            <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+              <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">External Transaction ID</div>
+              {transaction.transaction_id ? (
+                <div className="text-sm text-text font-mono">{transaction.transaction_id}</div>
+              ) : (
+                <div className="text-sm text-text-muted italic">—</div>
+              )}
+            </div>
+
+            <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+              <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Updated At</div>
+              <div className="text-sm text-text">{formatDate(transaction.updated_at)}</div>
             </div>
           </div>
-        )}
 
-        {/* Timestamps */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Created At</label>
-            <p className="mt-1 text-sm text-gray-900">{formatDate(transaction.created_at)}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Updated At</label>
-            <p className="mt-1 text-sm text-gray-900">{formatDate(transaction.updated_at)}</p>
-          </div>
+          {/* Error — full width, only when present */}
+          {transaction.error && (
+            <div className="bg-error/10 border border-error/20 rounded-lg p-6 animate-[fadeUp_0.6s_0.5s_ease_both]">
+              <div className="text-[0.58rem] uppercase tracking-[0.2em] text-error mb-3">Error</div>
+              <div className="text-sm text-text">{transaction.error}</div>
+            </div>
+          )}
+
+          {/* Metadata — full width */}
+          {transaction.metadata && Object.keys(transaction.metadata).length > 0 && (
+            <div className="bg-surface border border-border rounded-lg p-6 animate-[fadeUp_0.6s_0.6s_ease_both]">
+              <h2 className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-4">Metadata</h2>
+              <div className="bg-surface-2 rounded-md p-4">
+                <pre className="text-sm text-text whitespace-pre-wrap">
+                  {JSON.stringify(transaction.metadata, null, 2)}
+                </pre>
+              </div>
+            </div>
+          )}
+
         </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -12,7 +12,7 @@ export default function Header() {
       <div className="fixed -bottom-[30%] -right-[10%] w-[50%] h-[50%] bg-[radial-gradient(ellipse,rgba(40,60,140,0.07)_0%,transparent_70%)] pointer-events-none z-0" />
 
       {/* Navbar */}
-      <nav className="sticky top-0 z-[100] h-[60px] bg-[rgba(10,10,15,0.88)] backdrop-blur-[24px] border-b border-border flex items-center px-10 gap-12">
+      <nav className="sticky top-0 z-[100] h-[60px] bg-[rgba(10,10,15,0.88)] backdrop-blur-[24px] border-b border-border flex items-center px-4 sm:px-6 lg:px-10 gap-4 sm:gap-8 lg:gap-12">
         <div className="flex items-center gap-2 no-underline flex-shrink-0">
           <div className="w-7 h-7 border border-gold/35 flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-[3px] bg-gold-glow clip-path-triangle" />
@@ -23,62 +23,62 @@ export default function Header() {
           </span>
         </div>
 
-        <div className="flex items-stretch h-full gap-0">
+        <div className="flex items-stretch h-full gap-0 overflow-x-auto">
           <Link
             href="/payment"
-            className="relative flex items-center gap-2 px-5 bg-transparent border-none cursor-pointer font-mono text-xs uppercase tracking-[0.18em] text-text-muted transition-colors duration-200 hover:text-text"
+            className="relative flex items-center gap-2 px-3 sm:px-5 bg-transparent border-none cursor-pointer font-mono text-xs uppercase tracking-[0.18em] text-text-muted transition-colors duration-200 hover:text-text whitespace-nowrap"
           >
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <rect x="1" y="3" width="14" height="10" rx="1" />
               <path d="M1 6.5h14" />
               <path d="M4 10h3" strokeLinecap="round" />
             </svg>
-            Make Payment
+            <span className="hidden sm:inline">Make Payment</span>
           </Link>
 
           <Link
             href="/"
-            className="relative flex items-center gap-2 px-5 bg-transparent border-none cursor-pointer font-mono text-xs uppercase tracking-[0.18em] text-gold-light"
+            className="relative flex items-center gap-2 px-3 sm:px-5 bg-transparent border-none cursor-pointer font-mono text-xs uppercase tracking-[0.18em] text-gold-light whitespace-nowrap"
           >
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <path d="M2 4h12M2 8h8M2 12h10" strokeLinecap="round" />
             </svg>
-            Transactions
+            <span className="hidden sm:inline">Transactions</span>
             <span className="w-1 h-1 rounded-full bg-gold opacity-100" />
-            <div className="absolute bottom-0 left-5 right-5 h-px bg-gold scale-x-100" />
+            <div className="absolute bottom-0 left-3 sm:left-5 right-3 sm:right-5 h-px bg-gold scale-x-100" />
           </Link>
 
           <Link
             href="/integrations"
-            className="relative flex items-center gap-2 px-5 bg-transparent border-none cursor-pointer font-mono text-xs uppercase tracking-[0.18em] text-text-muted transition-colors duration-200 hover:text-text"
+            className="relative flex items-center gap-2 px-3 sm:px-5 bg-transparent border-none cursor-pointer font-mono text-xs uppercase tracking-[0.18em] text-text-muted transition-colors duration-200 hover:text-text whitespace-nowrap"
           >
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <path d="M8 1v6m0 0v6m0-6h6m-6 0H2" strokeLinecap="round" />
             </svg>
-            Integrations
+            <span className="hidden sm:inline">Integrations</span>
           </Link>
 
           <Link
             href="/projects"
-            className="relative flex items-center gap-2 px-5 bg-transparent border-none cursor-pointer font-mono text-xs uppercase tracking-[0.18em] text-text-muted transition-colors duration-200 hover:text-text"
+            className="relative flex items-center gap-2 px-3 sm:px-5 bg-transparent border-none cursor-pointer font-mono text-xs uppercase tracking-[0.18em] text-text-muted transition-colors duration-200 hover:text-text whitespace-nowrap"
           >
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <path d="M2 3h12v11H2zM7 8l3 3m0 0l3-3m-3 3V3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Projects
+            <span className="hidden sm:inline">Projects</span>
           </Link>
         </div>
 
-        <div className="ml-auto flex items-center gap-4">
-          <div className="rounded-full bg-green-500 shadow-[0_0_6px_#4caf80] animate-pulse">
+        <div className="ml-auto flex items-center gap-2 sm:gap-4">
+          <div className="rounded-full bg-green-500 shadow-[0_0_6px_#4caf80] animate-pulse hidden sm:block">
             Live Data
           </div>
           <div className="flex items-center gap-1 text-[0.58rem] uppercase tracking-[0.15em] text-text-dim">
             <div className="w-1.25 h-1.25 rounded-full bg-green-500 shadow-[0_0_6px_rgba(76,175,128,0.7)] animate-pulse" />
-            Systems Operational
+            <span className="hidden sm:inline">Systems Operational</span>
           </div>
-          <div className="w-px h-[18px] bg-border" />
-          <div className="text-[0.58rem] tracking-[0.1em] text-text-dim">
+          <div className="w-px h-[18px] bg-border hidden sm:block" />
+          <div className="text-[0.58rem] tracking-[0.1em] text-text-dim hidden lg:block">
             {new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
           </div>
         </div>

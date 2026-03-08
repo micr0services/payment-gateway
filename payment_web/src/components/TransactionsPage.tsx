@@ -191,15 +191,15 @@ export default function TransactionsPage() {
         {/* Table */}
         {!loading && transactions.length > 0 && (
           <div className="border border-border overflow-hidden animate-[fadeUp_0.6s_0.3s_ease_both] w-full">
-            <table className="w-full border-collapse">
+            <table className="w-full border-collapse table-fixed">
               <thead>
                 <tr className="bg-obsidian border-b border-border">
-                  <th className="py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">ID</th>
-                  <th className="py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Gateway</th>
-                  <th className="py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Amount</th>
-                  <th className="py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Status</th>
-                  <th className="py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Transaction Hash</th>
-                  <th className="py-4 px-5 text-right text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Created</th>
+                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">ID</th>
+                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Gateway</th>
+                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Amount</th>
+                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Status</th>
+                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Transaction ID</th>
+                  <th className="w-1/6 py-4 px-5 text-right text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Created</th>
                 </tr>
               </thead>
               <tbody>
@@ -207,25 +207,31 @@ export default function TransactionsPage() {
                   const s = getStatus(tx.status);
                   const d = formatDate(tx.created_at);
                   return (
-                    <Link key={tx.id} href={`/transaction/${tx.id}`} className="contents">
-                      <tr className="border-b border-white/3 transition-colors duration-150 cursor-pointer hover:bg-gold/5 last:border-b-0" style={{ animationDelay: `${i * 0.03}s` }}>
-                        <td className="py-4 px-5">
+                    <tr key={tx.id} className="border-b border-white/3 transition-colors duration-150 cursor-pointer hover:bg-gold/5 last:border-b-0" style={{ animationDelay: `${i * 0.03}s` }}>
+                      <td className="w-1/6 py-4 px-5">
+                        <Link href={`/transaction/${tx.id}`} className="block">
                           <span className="font-mono text-sm text-text">#{String(tx.id).padStart(6, '0')}</span>
-                        </td>
-                        <td className="py-4 px-5">
+                        </Link>
+                      </td>
+                      <td className="w-1/6 py-4 px-5">
+                        <Link href={`/transaction/${tx.id}`} className="block">
                           <span className="inline-flex items-center gap-1 tracking-[0.06em] capitalize">
                             <span className="w-5 h-5 rounded bg-surface-3 inline-flex items-center justify-center text-xs text-gold border border-gold/20">
                               {tx.gateway === 'stripe' ? 'S' : 'P'}
                             </span>
                             <span className="text-text">{tx.gateway}</span>
                           </span>
-                        </td>
-                        <td className="py-4 px-5">
+                        </Link>
+                      </td>
+                      <td className="w-1/6 py-4 px-5">
+                        <Link href={`/transaction/${tx.id}`} className="block">
                           <span className="font-serif text-lg font-normal text-text">
                             {formatAmount(tx.amount, tx.currency)}
                           </span>
-                        </td>
-                        <td className="py-4 px-5">
+                        </Link>
+                      </td>
+                      <td className="w-1/6 py-4 px-5">
+                        <Link href={`/transaction/${tx.id}`} className="block">
                           <span
                             className="inline-flex items-center gap-1 py-1 px-3 rounded text-xs uppercase tracking-[0.1em]"
                             style={{ backgroundColor: s.bg, color: s.color }}
@@ -233,20 +239,24 @@ export default function TransactionsPage() {
                             <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: s.dot }} />
                             {tx.status}
                           </span>
-                        </td>
-                        <td className="py-4 px-5">
+                        </Link>
+                      </td>
+                      <td className="w-1/6 py-4 px-5">
+                        <Link href={`/transaction/${tx.id}`} className="block">
                           <span className="text-sm text-text tracking-[0.03em] max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
                             {tx.transaction_id || '—'}
                           </span>
-                        </td>
-                        <td className="py-4 px-5 text-right">
+                        </Link>
+                      </td>
+                      <td className="w-1/6 py-4 px-5 text-right">
+                        <Link href={`/transaction/${tx.id}`} className="block">
                           <div className="flex flex-col gap-1 items-end">
                             <span className="text-sm text-text">{d.date}</span>
                             <span className="text-xs text-text">{d.time}</span>
                           </div>
-                        </td>
-                      </tr>
-                    </Link>
+                        </Link>
+                      </td>
+                    </tr>
                   );
                 })}
               </tbody>
