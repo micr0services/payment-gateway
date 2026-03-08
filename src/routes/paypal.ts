@@ -70,4 +70,42 @@ router.post('/paypal', idempotencyMiddleware, async (c) => {
   }
 });
 
+// Verify PayPal order
+router.post('/paypal/verify', async (c) => {
+  const { order_id } = await c.req.json();
+
+  if (!order_id) {
+    return c.json({ success: false, error: 'Order ID is required' }, 400);
+  }
+
+  try {
+    const paypal = require('@paypal/paypal-server-sdk')(c.env.PAYPAL_ENVIRONMENT, c.env.PAYPAL_CLIENT_ID, c.env.PAYPAL_CLIENT_SECRET);
+    const ordersController = paypal.ordersController;
+
+    const captureRequest = new paypal.orders.OrdersCaptureRequest(order_id);
+    const captureResponse = await ordersController.ordersCapture(captureRequest);
+
+    if (captureResponse.result.status === 'COMPLETED') {
+      // Update transaction status
+      const transaction = await Transaction.findByPaypalOrderId(c.env.DATABASE_URL, order_id);
+      if (transaction && transaction.status !== 'completed') {
+        await Transaction.updateStatus(c.env.DATABASE_URL, transaction.idempotency_key, 'completed');
+      }
+
+      return c.json({
+        success: true,
+        order: {
+          id: captureResponse.result.id,
+          status: captureResponse.result.status,
+          amount: captureResponse.result.purchase_units[0].amount,
+        }
+      });
+    } else {
+      return c.json({ success: false, error: 'Payment not completed' });
+    }
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500);
+  }
+});
+
 export default router;

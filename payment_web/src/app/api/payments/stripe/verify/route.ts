@@ -4,16 +4,18 @@ const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || 'https://payment-gatewa
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const idempotencyKey = request.headers.get('Idempotency-Key') || `web-${Date.now()}-${Math.random()}`;
+    const { session_id } = await request.json();
 
-    const response = await fetch(`${WORKER_URL}/api/payments/stripe`, {
+    if (!session_id) {
+      return NextResponse.json({ success: false, error: 'Session ID is required' }, { status: 400 });
+    }
+
+    const response = await fetch(`${WORKER_URL}/api/payments/stripe/verify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Idempotency-Key': idempotencyKey,
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ session_id }),
     });
 
     const data = await response.json();
@@ -24,9 +26,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Stripe payment error:', error);
+    console.error('Stripe verification error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }

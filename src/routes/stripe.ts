@@ -186,4 +186,40 @@ router.post('/stripe/:paymentIntentId/confirm', async (c) => {
   }
 });
 
+// Verify Stripe session
+router.post('/stripe/verify', async (c) => {
+  const { session_id } = await c.req.json();
+
+  if (!session_id) {
+    return c.json({ success: false, error: 'Session ID is required' }, 400);
+  }
+
+  try {
+    const stripe = getStripeClient(c.env.STRIPE_SECRET_KEY);
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+
+    if (session.payment_status === 'paid') {
+      // Update transaction status if found
+      const transaction = await Transaction.findByStripePaymentIntentId(c.env.DATABASE_URL, session.id);
+      if (transaction && transaction.status !== 'completed') {
+        await Transaction.updateStatus(c.env.DATABASE_URL, transaction.idempotency_key, 'completed');
+      }
+
+      return c.json({
+        success: true,
+        session: {
+          id: session.id,
+          payment_status: session.payment_status,
+          amount_total: session.amount_total,
+          currency: session.currency,
+        }
+      });
+    } else {
+      return c.json({ success: false, error: 'Payment not completed' });
+    }
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500);
+  }
+});
+
 export default router;

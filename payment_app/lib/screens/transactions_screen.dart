@@ -363,14 +363,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             if (!_isLoading && transactions.isNotEmpty)
               Expanded(
                 child: Container(
+                  width: double.infinity,
                   decoration: BoxDecoration(
                     border: Border.all(color: const Color(0xFF404040)),
                   ),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.vertical,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
+                    child: DataTable(
                       headingRowColor: MaterialStateProperty.all(const Color(0xFF1A1A1A)),
                       dataRowColor: MaterialStateProperty.resolveWith<Color?>(
                         (Set<MaterialState> states) {
@@ -382,54 +381,62 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       ),
                       headingRowHeight: 50,
                       dataRowHeight: 60,
-                      horizontalMargin: 0,
-                      columnSpacing: 16,
+                      horizontalMargin: 24,
+                      columnSpacing: 24,
                       dividerThickness: 1,
                       border: TableBorder.symmetric(
                         inside: BorderSide(color: const Color(0xFF404040), width: 1),
                       ),
                       columns: const [
                         DataColumn(
-                          label: Text(
-                            'Gateway',
-                            style: TextStyle(
-                              color: Color(0xFFE0E0E0),
-                              fontSize: 12,
-                              letterSpacing: 2,
-                              fontWeight: FontWeight.w500,
+                          label: Expanded(
+                            child: Text(
+                              'Gateway',
+                              style: TextStyle(
+                                color: Color(0xFFE0E0E0),
+                                fontSize: 12,
+                                letterSpacing: 2,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
                         DataColumn(
-                          label: Text(
-                            'Amount',
-                            style: TextStyle(
-                              color: Color(0xFFE0E0E0),
-                              fontSize: 12,
-                              letterSpacing: 2,
-                              fontWeight: FontWeight.w500,
+                          label: Expanded(
+                            child: Text(
+                              'Amount',
+                              style: TextStyle(
+                                color: Color(0xFFE0E0E0),
+                                fontSize: 12,
+                                letterSpacing: 2,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
                         DataColumn(
-                          label: Text(
-                            'Status',
-                            style: TextStyle(
-                              color: Color(0xFFE0E0E0),
-                              fontSize: 12,
-                              letterSpacing: 2,
-                              fontWeight: FontWeight.w500,
+                          label: Expanded(
+                            child: Text(
+                              'Status',
+                              style: TextStyle(
+                                color: Color(0xFFE0E0E0),
+                                fontSize: 12,
+                                letterSpacing: 2,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
                         DataColumn(
-                          label: Text(
-                            'Created',
-                            style: TextStyle(
-                              color: Color(0xFFE0E0E0),
-                              fontSize: 12,
-                              letterSpacing: 2,
-                              fontWeight: FontWeight.w500,
+                          label: Expanded(
+                            child: Text(
+                              'Created',
+                              style: TextStyle(
+                                color: Color(0xFFE0E0E0),
+                                fontSize: 12,
+                                letterSpacing: 2,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
