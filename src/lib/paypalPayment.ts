@@ -8,6 +8,7 @@ interface PaypalResult {
   id?: string;
   error?: string;
   approvalUrl?: string;
+  result?: any;
 }
 
 // Singleton PayPal token cache
@@ -148,7 +149,7 @@ async function capturePaypalPayment(paypalEnvironment: string, paypalClientId: s
     });
     const result: any = await resp.json();
     if (resp.ok) {
-      return { success: true, status: result.status, id: result.id };
+      return { success: true, status: result.status, id: result.id, result };
     } else {
       return { success: false, error: JSON.stringify(result) };
     }

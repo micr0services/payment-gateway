@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import Transaction from '../models/Transaction';
-import { processPaypalPayment } from '../lib/paypalPayment';
+import { processPaypalPayment, capturePaypalPayment } from '../lib/paypalPayment';
 import idempotencyMiddleware from '../middleware/idempotency';
 import retry from 'async-retry';
 
@@ -80,13 +80,9 @@ router.post('/paypal/verify', async (c) => {
   }
 
   try {
-    const paypal = require('@paypal/paypal-server-sdk')(c.env.PAYPAL_ENVIRONMENT, c.env.PAYPAL_CLIENT_ID, c.env.PAYPAL_CLIENT_SECRET);
-    const ordersController = paypal.ordersController;
+    const result = await capturePaypalPayment(c.env.PAYPAL_ENVIRONMENT, c.env.PAYPAL_CLIENT_ID, c.env.PAYPAL_CLIENT_SECRET, order_id);
 
-    const captureRequest = new paypal.orders.OrdersCaptureRequest(order_id);
-    const captureResponse = await ordersController.ordersCapture(captureRequest);
-
-    if (captureResponse.result.status === 'COMPLETED') {
+    if (result.success && result.status === 'COMPLETED') {
       // Update transaction status
       const transaction = await Transaction.findByPaypalOrderId(c.env.DATABASE_URL, order_id);
       if (transaction && transaction.status !== 'completed') {
@@ -96,13 +92,13 @@ router.post('/paypal/verify', async (c) => {
       return c.json({
         success: true,
         order: {
-          id: captureResponse.result.id,
-          status: captureResponse.result.status,
-          amount: captureResponse.result.purchase_units[0].amount,
+          id: result.id,
+          status: result.status,
+          amount: result.result.purchase_units[0].amount,
         }
       });
     } else {
-      return c.json({ success: false, error: 'Payment not completed' });
+      return c.json({ success: false, error: result.error || 'Payment not completed' });
     }
   } catch (error: any) {
     return c.json({ success: false, error: error.message }, 500);
