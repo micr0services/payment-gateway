@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const idempotencyKey = request.headers.get('Idempotency-Key') || `web-${Date.now()}-${Math.random()}`;
 
-    const response = await fetch(`${WORKER_URL}/api/payments/stripe`, {
+    const response = await fetch(`${WORKER_URL}/api/stripe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

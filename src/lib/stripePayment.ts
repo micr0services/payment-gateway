@@ -83,8 +83,8 @@ async function processStripePayment(
     return {
       success: true,
       id: session.id,
-      checkoutUrl: session.url,
-      status: session.status
+      checkoutUrl: session.url ?? undefined,
+      status: session.status ?? undefined
     };
   } catch (error: any) {
     return { success: false, error: error.message };
