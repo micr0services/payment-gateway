@@ -34,7 +34,7 @@ class ApiService {
 
   // PayPal Payment
   Future<Map<String, dynamic>> createPayPalPayment({
-    required int amount,
+    required double amount,
     required String currency,
     Map<String, dynamic>? metadata,
   }) async {

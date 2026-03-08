@@ -60,7 +60,7 @@ class PaymentProvider with ChangeNotifier {
 
     try {
       final result = await _apiService.createPayPalPayment(
-        amount: (amount * 100).toInt(), // Convert to cents
+        amount: amount, // PayPal expects dollars, not cents
         currency: currency,
         metadata: metadata,
       );

@@ -169,7 +169,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                       const SizedBox(height: 32),
 
                       // Metadata
-                      if (transaction.metadata != null && transaction.metadata.isNotEmpty)
+                      if (transaction.metadata != null && transaction.metadata!.isNotEmpty)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

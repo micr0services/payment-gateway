@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../providers/payment_provider.dart';
 import '../models/transaction.dart';
 import 'transaction_details_screen.dart';
@@ -286,288 +287,238 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               ),
             ),
 
-            // Error State
-            if (paymentProvider.error != null)
-              Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE05C5C).withOpacity(0.1),
-                  border: Border.all(color: const Color(0xFFE05C5C).withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    const Text('⚠', style: TextStyle(color: Color(0xFFE05C5C))),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        paymentProvider.error!,
-                        style: const TextStyle(color: Color(0xFFE05C5C), fontSize: 14),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            _buildConditionalContent(),
+          ],
+        ),
+      ),
+    );
+  }
 
-              // Error State
-              if (paymentProvider.error != null)
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.only(bottom: 24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE05C5C).withOpacity(0.1),
-                    border: Border.all(color: const Color(0xFFE05C5C).withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Text('⚠', style: TextStyle(color: Color(0xFFE05C5C))),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          paymentProvider.error!,
-                          style: const TextStyle(color: Color(0xFFE05C5C), fontSize: 14),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+  Widget _buildConditionalContent() {
+    final paymentProvider = Provider.of<PaymentProvider>(context);
+    final transactions = paymentProvider.transactions;
 
-            // Loading State
-            if (_isLoading)
-              Expanded(
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC9A84C)),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'Fetching transactions',
-                        style: TextStyle(
-                          color: Color(0xFFB0B0B0),
-                          fontSize: 14,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-            // Transactions Table
-            if (!_isLoading && transactions.isNotEmpty)
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFF404040)),
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: DataTable(
-                      headingRowColor: MaterialStateProperty.all(const Color(0xFF1A1A1A)),
-                      dataRowColor: MaterialStateProperty.resolveWith<Color?>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.hovered)) {
-                            return const Color(0xFFC9A84C).withOpacity(0.05);
-                          }
-                          return const Color(0xFF0A0A0F);
-                        },
-                      ),
-                      headingRowHeight: 50,
-                      dataRowHeight: 60,
-                      horizontalMargin: 24,
-                      columnSpacing: 24,
-                      dividerThickness: 1,
-                      border: TableBorder.symmetric(
-                        inside: BorderSide(color: const Color(0xFF404040), width: 1),
-                      ),
-                      columns: const [
-                        DataColumn(
-                          label: Expanded(
-                            child: Text(
-                              'Gateway',
-                              style: TextStyle(
-                                color: Color(0xFFE0E0E0),
-                                fontSize: 12,
-                                letterSpacing: 2,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Expanded(
-                            child: Text(
-                              'Amount',
-                              style: TextStyle(
-                                color: Color(0xFFE0E0E0),
-                                fontSize: 12,
-                                letterSpacing: 2,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Expanded(
-                            child: Text(
-                              'Status',
-                              style: TextStyle(
-                                color: Color(0xFFE0E0E0),
-                                fontSize: 12,
-                                letterSpacing: 2,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Expanded(
-                            child: Text(
-                              'Created',
-                              style: TextStyle(
-                                color: Color(0xFFE0E0E0),
-                                fontSize: 12,
-                                letterSpacing: 2,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      rows: transactions.map((transaction) {
-                        final statusConfig = _getStatusConfig(transaction.status);
-                        final formattedDate = transaction.formattedDate;
-                        final formattedAmount = _formatAmount(transaction.amount, transaction.currency);
-
-                        return DataRow(
-                          onSelectChanged: (_) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => TransactionDetailsScreen(transaction: transaction),
-                              ),
-                            );
-                          },
-                          cells: [
-                            DataCell(Row(
-                              children: [
-                                Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF1A1A1A),
-                                    border: Border.all(color: const Color(0xFFC9A84C).withOpacity(0.3)),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      transaction.gateway == 'stripe' ? 'S' : 'P',
-                                      style: const TextStyle(
-                                        color: Color(0xFFC9A84C),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  transaction.gateway,
-                                  style: const TextStyle(color: Color(0xFFE0E0E0), fontSize: 12),
-                                ),
-                              ],
-                            )),
-                            DataCell(Text(
-                              formattedAmount,
-                              style: const TextStyle(
-                                color: Color(0xFFE0E0E0),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            )),
-                            DataCell(Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: statusConfig['bg'] as Color,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                transaction.status,
-                                style: TextStyle(
-                                  color: statusConfig['color'] as Color,
-                                  fontSize: 12,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            )),
-                            DataCell(Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  formattedDate,
-                                  style: const TextStyle(
-                                    color: Color(0xFFE0E0E0),
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            )),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
+    // Error State
+    if (paymentProvider.error != null) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 24),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE05C5C).withOpacity(0.1),
+          border: Border.all(color: const Color(0xFFE05C5C).withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            const Text('⚠', style: TextStyle(color: Color(0xFFE05C5C))),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                paymentProvider.error!,
+                style: const TextStyle(color: Color(0xFFE05C5C), fontSize: 14),
               ),
             ),
+          ],
+        ),
+      );
+    }
 
-            // Empty State
-            if (!_isLoading && transactions.isEmpty)
-              Expanded(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(48.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '◈',
-                          style: TextStyle(
-                            fontSize: 48,
-                            color: const Color(0xFFB0B0B0).withOpacity(0.3),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'No transactions yet',
-                          style: TextStyle(
-                            color: Color(0xFFB0B0B0),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Make a payment to see your transaction history',
-                          style: TextStyle(
-                            color: Color(0xFF808080),
-                            fontSize: 12,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+    // Loading State
+    if (_isLoading) {
+      return Expanded(
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC9A84C)),
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Fetching transactions',
+                style: TextStyle(
+                  color: Color(0xFFB0B0B0),
+                  fontSize: 14,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Empty State
+    if (transactions.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(48.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '◈',
+                  style: TextStyle(
+                    fontSize: 48,
+                    color: const Color(0xFFB0B0B0).withOpacity(0.3),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'No transactions yet',
+                  style: TextStyle(
+                    color: Color(0xFFB0B0B0),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Make a payment to see your transaction history',
+                  style: TextStyle(
+                    color: Color(0xFF808080),
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Transactions Table
+    return Expanded(
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFF404040)),
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: DataTable(
+            headingRowColor: MaterialStateProperty.all(const Color(0xFF1A1A1A)),
+            dataRowColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return const Color(0xFFC9A84C).withOpacity(0.05);
+                }
+                return const Color(0xFF0A0A0F);
+              },
+            ),
+            headingRowHeight: 50,
+            dataRowHeight: 60,
+            horizontalMargin: 24,
+            columnSpacing: 24,
+            dividerThickness: 1,
+            border: TableBorder.symmetric(
+              inside: BorderSide(color: const Color(0xFF404040), width: 1),
+            ),
+            columns: const [
+              DataColumn(
+                label: Text(
+                  'Gateway',
+                  style: TextStyle(
+                    color: Color(0xFFC9A84C),
+                    fontSize: 12,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-          ],
+              DataColumn(
+                label: Text(
+                  'Amount',
+                  style: TextStyle(
+                    color: Color(0xFFC9A84C),
+                    fontSize: 12,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Status',
+                  style: TextStyle(
+                    color: Color(0xFFC9A84C),
+                    fontSize: 12,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Date',
+                  style: TextStyle(
+                    color: Color(0xFFC9A84C),
+                    fontSize: 12,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+            rows: transactions.map((transaction) {
+              final statusConfig = _getStatusConfig(transaction.status);
+              final formattedAmount = '\$${transaction.amount.toStringAsFixed(2)}';
+              final formattedDate = DateFormat('MMM dd, yyyy\nHH:mm').format(transaction.createdAt);
+              return DataRow(
+                cells: [
+                  DataCell(Text(
+                    transaction.gateway.toUpperCase(),
+                    style: const TextStyle(
+                      color: Color(0xFFE0E0E0),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  )),
+                  DataCell(Text(
+                    formattedAmount,
+                    style: const TextStyle(
+                      color: Color(0xFFE0E0E0),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  )),
+                  DataCell(Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: statusConfig['bg'] as Color,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      transaction.status,
+                      style: TextStyle(
+                        color: statusConfig['color'] as Color,
+                        fontSize: 12,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  )),
+                  DataCell(Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        formattedDate,
+                        style: const TextStyle(
+                          color: Color(0xFFE0E0E0),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  )),
+                ],
+              );
+            }).toList(),
+          ),
         ),
       ),
     );

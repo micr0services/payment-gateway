@@ -53,7 +53,7 @@ router.post('/paypal', idempotencyMiddleware, async (c) => {
       c.env.DATABASE_URL,
       c.get('idempotencyKey'),
       'pending', // Status remains pending until webhook confirms
-      result.orderId,
+      null, // transaction_id - will be set on capture
       null,
       null, // stripe_payment_intent_id
       result.orderId // paypal_order_id
@@ -86,7 +86,7 @@ router.post('/paypal/verify', async (c) => {
       // Update transaction status
       const transaction = await Transaction.findByPaypalOrderId(c.env.DATABASE_URL, order_id);
       if (transaction && transaction.status !== 'completed') {
-        await Transaction.updateStatus(c.env.DATABASE_URL, transaction.idempotency_key, 'completed');
+        await Transaction.updateStatus(c.env.DATABASE_URL, transaction.idempotency_key, 'completed', result.id);
       }
 
       return c.json({

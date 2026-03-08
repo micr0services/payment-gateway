@@ -17,7 +17,7 @@ export default function PayPalPayment({ amount, currency = 'USD', onSuccess, onE
     setLoading(true);
     try {
       const response = await axios.post<{ approvalUrl: string; orderId: string }>('/api/payments/paypal', {
-        amount: Math.round(amount * 100),
+        amount: amount,
         currency,
       }, {
         headers: { 'Idempotency-Key': `paypal-${Date.now()}-${Math.random()}` },

@@ -8,6 +8,8 @@ import 'screens/paypal_payment_screen.dart';
 import 'screens/projects_screen.dart';
 import 'screens/integrations_screen.dart';
 import 'screens/stripe_payment_screen.dart';
+import 'screens/payment_success_screen.dart';
+import 'screens/payment_cancel_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,6 +85,8 @@ class MyApp extends StatelessWidget {
           '/payment': (context) => PaymentScreen(),
           '/paypal': (context) => PayPalPaymentScreen(),
           '/stripe': (context) => StripePaymentScreen(),
+          '/success': (context) => PaymentSuccessScreen(),
+          '/cancel': (context) => PaymentCancelScreen(),
           '/projects': (context) => ProjectsScreen(),
           '/integrations': (context) => IntegrationsScreen(),
         },
