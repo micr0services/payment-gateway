@@ -235,11 +235,11 @@ export default function TransactionsPage() {
                 <thead>
                   <tr className="bg-obsidian border-b border-border">
                     <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">ID</th>
-                    <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Gateway</th>
-                    <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Amount</th>
-                    <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Status</th>
-                    <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Transaction ID</th>
-                    <th className="w-1/6 py-4 px-5 text-right text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Created</th>
+                    <th className="w-1/7 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Gateway</th>
+                    <th className="w-1/7 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Amount</th>
+                    <th className="w-1/7 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Status</th>
+                    <th className="w-1/7 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Transaction ID</th>
+                    <th className="w-1/7 py-4 px-5 text-right text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Created</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -274,7 +274,7 @@ export default function TransactionsPage() {
                           </span>
                         </td>
                         <td className="w-1/6 py-4 px-5">
-                          <span className="text-sm text-text tracking-[0.03em] max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
+                          <span className="text-sm text-text tracking-[0.03em]  overflow-hidden text-ellipsis whitespace-nowrap">
                             {tx.transaction_id || '—'}
                           </span>
                         </td>

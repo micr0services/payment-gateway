@@ -988,3 +988,26 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     );
   }
 }
+
+class ScanlinesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black.withOpacity(0.08)
+      ..strokeWidth = 1;
+
+    const lineHeight = 2.0;
+    const gapHeight = 2.0;
+
+    for (double y = 0; y < size.height; y += lineHeight + gapHeight) {
+      canvas.drawLine(
+        Offset(0, y),
+        Offset(size.width, y),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}

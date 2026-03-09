@@ -3,6 +3,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'providers/payment_provider.dart';
 import 'screens/landing_screen.dart';
+import 'screens/home_screen.dart';
 import 'screens/payment_screen.dart';
 import 'screens/paypal_payment_screen.dart';
 import 'screens/projects_screen.dart';

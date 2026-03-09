@@ -77,6 +77,7 @@ export default function Home() {
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [showNavigation, setShowNavigation] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     // Initialize audio context on first interaction
@@ -202,6 +203,65 @@ export default function Home() {
         boxShadow: '0 0 30px rgba(59, 130, 246, 1), 0 0 60px rgba(59, 130, 246, 0.6), 0 0 100px rgba(59, 130, 246, 0.3)',
       }} />
 
+      {/* Mobile Menu Button - Top Right */}
+      {showNavigation && (
+        <div className="fixed top-4 right-4 z-50 sm:hidden">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="w-10 h-10 rounded border border-gold/30 bg-obsidian/90 backdrop-blur-sm flex items-center justify-center text-gold hover:border-gold/60 hover:bg-gold/5 transition-all duration-200"
+          >
+            <div className="flex flex-col gap-0.5">
+              <div className={`w-4 h-0.5 bg-gold transition-transform duration-200 ${isMenuOpen ? 'rotate-45 translate-y-1' : ''}`} />
+              <div className={`w-4 h-0.5 bg-gold transition-opacity duration-200 ${isMenuOpen ? 'opacity-0' : ''}`} />
+              <div className={`w-4 h-0.5 bg-gold transition-transform duration-200 ${isMenuOpen ? '-rotate-45 -translate-y-1' : ''}`} />
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* Mobile Dropdown Menu */}
+      {showNavigation && isMenuOpen && (
+        <div className="fixed top-16 right-4 z-40 sm:hidden">
+          <div className="bg-obsidian/95 backdrop-blur-sm border border-gold/30 rounded-lg p-4 min-w-[200px] shadow-2xl">
+            <div className="flex flex-col gap-3">
+              <a
+                href="/dashboard"
+                className="flex items-center gap-3 text-gold hover:text-gold-light transition-colors py-2 px-3 rounded hover:bg-gold/5"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-lg">📊</span>
+                <span className="text-sm uppercase tracking-wider">Dashboard</span>
+              </a>
+              <a
+                href="/integrations"
+                className="flex items-center gap-3 text-gold hover:text-gold-light transition-colors py-2 px-3 rounded hover:bg-gold/5"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-lg">🔗</span>
+                <span className="text-sm uppercase tracking-wider">Integrations</span>
+              </a>
+              <div className="border-t border-gold/20 my-2" />
+              <a
+                href="/payment/stripe"
+                className="flex items-center gap-3 text-gold hover:text-gold-light transition-colors py-2 px-3 rounded hover:bg-gold/5"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-lg">💳</span>
+                <span className="text-sm uppercase tracking-wider">Pay Stripe</span>
+              </a>
+              <a
+                href="/payment/paypal"
+                className="flex items-center gap-3 text-gold hover:text-gold-light transition-colors py-2 px-3 rounded hover:bg-gold/5"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-lg">💰</span>
+                <span className="text-sm uppercase tracking-wider">Pay PayPal</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="relative z-10 w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-12 py-6 sm:py-8 md:py-10 lg:py-20 flex flex-col items-center justify-center min-h-screen text-center">
         {/* Render all lines */}
         {SCRIPT.map(line => renderLine(line))}
@@ -209,24 +269,6 @@ export default function Home() {
         {/* Navigation Links - show after typing is complete */}
         {showNavigation && (
           <>
-            {/* Top Navigation - Dashboard & Integrations */}
-            <div className="w-full max-w-xs mx-auto mb-4 sm:hidden">
-              <div className="flex justify-between items-center">
-                <a href="/dashboard" className="flex flex-col items-center gap-1 text-gold hover:text-gold-light transition-colors group">
-                  <div className="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center group-hover:border-gold/60 transition-colors">
-                    <span className="text-xs">📊</span>
-                  </div>
-                  <span className="text-[10px] uppercase tracking-wider">Dashboard</span>
-                </a>
-                <a href="/integrations" className="flex flex-col items-center gap-1 text-gold hover:text-gold-light transition-colors group">
-                  <div className="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center group-hover:border-gold/60 transition-colors">
-                    <span className="text-xs">🔗</span>
-                  </div>
-                  <span className="text-[10px] uppercase tracking-wider">Integrations</span>
-                </a>
-              </div>
-            </div>
-
             <div className="h-4 sm:h-8" />
             <div className="flex gap-1.5 sm:gap-2.5 mb-6 sm:mb-8">
               <span className="text-gold flex-shrink-0 text-sm sm:text-base">▸</span>
@@ -242,24 +284,6 @@ export default function Home() {
                 </a>
                 <a href="/integrations" className="text-gold hover:text-gold-light transition-colors underline hidden sm:inline">
                   integrations
-                </a>
-              </div>
-            </div>
-
-            {/* Bottom Navigation - Payment Methods */}
-            <div className="w-full max-w-xs mx-auto mt-4 sm:hidden">
-              <div className="flex justify-between items-center">
-                <a href="/payment/stripe" className="flex flex-col items-center gap-1 text-gold hover:text-gold-light transition-colors group">
-                  <div className="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center group-hover:border-gold/60 transition-colors bg-gold/5 group-hover:bg-gold/10">
-                    <span className="text-xs">💳</span>
-                  </div>
-                  <span className="text-[10px] uppercase tracking-wider font-medium">Stripe</span>
-                </a>
-                <a href="/payment/paypal" className="flex flex-col items-center gap-1 text-gold hover:text-gold-light transition-colors group">
-                  <div className="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center group-hover:border-gold/60 transition-colors">
-                    <span className="text-xs">💰</span>
-                  </div>
-                  <span className="text-[10px] uppercase tracking-wider">PayPal</span>
                 </a>
               </div>
             </div>
