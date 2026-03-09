@@ -79,7 +79,7 @@ export default function Header() {
               <path d="M2 4h12M2 8h8M2 12h10" strokeLinecap="round" />
             </svg>
             <span className="text-[10px] sm:text-xs">
-              <span className="sm:hidden">Transc</span>
+              <span className="sm:hidden">Trans</span>
               <span className="hidden sm:inline">Transactions</span>
             </span>
             {pathname === '/dashboard' || pathname?.startsWith('/transaction') ? (
@@ -101,7 +101,7 @@ export default function Header() {
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <path d="M8 1v6m0 0v6m0-6h6m-6 0H2" strokeLinecap="round" />
             </svg>
-            <span className="text-[10px] sm:text-xs">
+            <span className="text-[9px] sm:text-xs">
               <span className="sm:hidden">Intergrate</span>
               <span className="hidden sm:inline">Integrations</span>
             </span>
@@ -124,7 +124,7 @@ export default function Header() {
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <path d="M2 3h12v11H2zM7 8l3 3m0 0l3-3m-3 3V3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="text-[10px] sm:text-xs">
+            <span className="text-[9px] sm:text-xs">
               <span className="sm:hidden">Project</span>
               <span className="hidden sm:inline">Projects</span>
             </span>
