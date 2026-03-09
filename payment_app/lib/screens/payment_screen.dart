@@ -88,7 +88,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 children: [
                   // Header
                   Container(
-                    paddingBottom: 24,
+                    padding: const EdgeInsets.only(bottom: 24),
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(color: Color(0xFF404040)),
@@ -454,42 +454,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
         ),
       ],
-    );
-  }
-}
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color(0xFFB0B0B0),
-                height: 1.5,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-
-            // CTA
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Proceed with $title',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFFE8C97A),
-                    letterSpacing: 1.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Icon(
-                  Icons.arrow_forward,
-                  color: const Color(0xFFE8C97A),
-                  size: 16,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
