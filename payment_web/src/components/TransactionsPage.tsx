@@ -194,12 +194,12 @@ export default function TransactionsPage() {
             <table className="w-full border-collapse table-fixed">
               <thead>
                 <tr className="bg-obsidian border-b border-border">
-                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">ID</th>
-                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Gateway</th>
-                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Amount</th>
-                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Status</th>
-                  <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Transaction ID</th>
-                  <th className="w-1/6 py-4 px-5 text-right text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Created</th>
+                  <th className="hidden md:table-cell md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">ID</th>
+                  <th className="w-1/4 md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Gateway</th>
+                  <th className="w-1/4 md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Amount</th>
+                  <th className="w-1/4 md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Status</th>
+                  <th className="hidden md:table-cell md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Transaction ID</th>
+                  <th className="w-1/4 md:w-1/6 py-4 px-5 text-right text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Created</th>
                 </tr>
               </thead>
               <tbody>
@@ -208,12 +208,12 @@ export default function TransactionsPage() {
                   const d = formatDate(tx.created_at);
                   return (
                     <tr key={tx.id} className="border-b border-white/3 transition-colors duration-150 cursor-pointer hover:bg-gold/5 last:border-b-0" style={{ animationDelay: `${i * 0.03}s` }}>
-                      <td className="w-1/6 py-4 px-5">
+                      <td className="hidden md:table-cell md:w-1/6 py-4 px-5">
                         <Link href={`/transaction/${tx.id}`} className="block">
                           <span className="font-mono text-sm text-text">#{String(tx.id).padStart(6, '0')}</span>
                         </Link>
                       </td>
-                      <td className="w-1/6 py-4 px-5">
+                      <td className="w-1/4 md:w-1/6 py-4 px-5">
                         <Link href={`/transaction/${tx.id}`} className="block">
                           <span className="inline-flex items-center gap-1 tracking-[0.06em] capitalize">
                             <span className="w-5 h-5 rounded bg-surface-3 inline-flex items-center justify-center text-xs text-gold border border-gold/20">
@@ -223,14 +223,14 @@ export default function TransactionsPage() {
                           </span>
                         </Link>
                       </td>
-                      <td className="w-1/6 py-4 px-5">
+                      <td className="w-1/4 md:w-1/6 py-4 px-5">
                         <Link href={`/transaction/${tx.id}`} className="block">
                           <span className="font-serif text-lg font-normal text-text">
                             {formatAmount(tx.amount, tx.currency)}
                           </span>
                         </Link>
                       </td>
-                      <td className="w-1/6 py-4 px-5">
+                      <td className="w-1/4 md:w-1/6 py-4 px-5">
                         <Link href={`/transaction/${tx.id}`} className="block">
                           <span
                             className="inline-flex items-center gap-1 py-1 px-3 rounded text-xs uppercase tracking-[0.1em]"
@@ -241,7 +241,7 @@ export default function TransactionsPage() {
                           </span>
                         </Link>
                       </td>
-                      <td className="w-1/6 py-4 px-5">
+                      <td className="hidden md:table-cell md:w-1/6 py-4 px-5">
                         <Link href={`/transaction/${tx.id}`} className="block">
                           <span className="text-sm text-text tracking-[0.03em] max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
                             {tx.transaction_id || '—'}
