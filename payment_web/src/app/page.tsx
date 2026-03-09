@@ -209,11 +209,29 @@ export default function Home() {
         {/* Navigation Links - show after typing is complete */}
         {showNavigation && (
           <>
-            <div className="h-6 sm:h-8" />
+            {/* Top Navigation - Dashboard & Integrations */}
+            <div className="w-full max-w-xs mx-auto mb-4 sm:hidden">
+              <div className="flex justify-between items-center">
+                <a href="/dashboard" className="flex flex-col items-center gap-1 text-gold hover:text-gold-light transition-colors group">
+                  <div className="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center group-hover:border-gold/60 transition-colors">
+                    <span className="text-xs">📊</span>
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider">Dashboard</span>
+                </a>
+                <a href="/integrations" className="flex flex-col items-center gap-1 text-gold hover:text-gold-light transition-colors group">
+                  <div className="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center group-hover:border-gold/60 transition-colors">
+                    <span className="text-xs">🔗</span>
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider">Integrations</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="h-4 sm:h-8" />
             <div className="flex gap-1.5 sm:gap-2.5 mb-6 sm:mb-8">
               <span className="text-gold flex-shrink-0 text-sm sm:text-base">▸</span>
               <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm">
-                <a href="/dashboard" className="text-gold hover:text-gold-light transition-colors underline">
+                <a href="/dashboard" className="text-gold hover:text-gold-light transition-colors underline hidden sm:inline">
                   dashboard
                 </a>
                 <a href="/payment/stripe" className="text-gold hover:text-gold-light transition-colors underline">
@@ -222,8 +240,26 @@ export default function Home() {
                 <a href="/payment/paypal" className="text-gold hover:text-gold-light transition-colors underline">
                   pay_paypal
                 </a>
-                <a href="/integrations" className="text-gold hover:text-gold-light transition-colors underline">
+                <a href="/integrations" className="text-gold hover:text-gold-light transition-colors underline hidden sm:inline">
                   integrations
+                </a>
+              </div>
+            </div>
+
+            {/* Bottom Navigation - Payment Methods */}
+            <div className="w-full max-w-xs mx-auto mt-4 sm:hidden">
+              <div className="flex justify-between items-center">
+                <a href="/payment/stripe" className="flex flex-col items-center gap-1 text-gold hover:text-gold-light transition-colors group">
+                  <div className="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center group-hover:border-gold/60 transition-colors bg-gold/5 group-hover:bg-gold/10">
+                    <span className="text-xs">💳</span>
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider font-medium">Stripe</span>
+                </a>
+                <a href="/payment/paypal" className="flex flex-col items-center gap-1 text-gold hover:text-gold-light transition-colors group">
+                  <div className="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center group-hover:border-gold/60 transition-colors">
+                    <span className="text-xs">💰</span>
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider">PayPal</span>
                 </a>
               </div>
             </div>

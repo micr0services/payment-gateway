@@ -20,18 +20,18 @@ export default function PayPalPaymentPage() {
   const currencySymbols: Record<string, string> = { usd: '$', eur: '€', gbp: '£' };
 
   return (
-    <div className="flex items-center justify-center p-8 relative overflow-hidden min-h-[calc(100vh-60px)]">
+    <div className="flex items-center justify-center p-4 sm:p-6 md:p-8 relative overflow-hidden min-h-[calc(100vh-60px)]">
       <div className="relative z-10 w-full max-w-[460px] bg-surface border border-border rounded-sm shadow-[0_0_0_1px_rgba(201,168,76,0.08),0_40px_80px_rgba(0,0,0,0.6),0_0_120px_rgba(201,168,76,0.04)] animate-[cardIn_0.8s_cubic-bezier(0.16,1,0.3,1)_both]">
-        <div className="p-10 pb-8 border-b border-border relative">
-          <div className="absolute bottom-0 left-10 w-12 h-px bg-gold" />
-          <div className="text-xs uppercase tracking-[0.25em] text-gold mb-3 flex items-center gap-2">
-            <span className="text-[0.4rem]">◆</span>
+        <div className="p-6 sm:p-8 md:p-10 pb-6 sm:pb-8 border-b border-border relative">
+          <div className="absolute bottom-0 left-6 sm:left-10 w-8 sm:w-12 h-px bg-gold" />
+          <div className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-gold mb-2 sm:mb-3 flex items-center gap-2">
+            <span className="text-[0.3rem] sm:text-[0.4rem]">◆</span>
             PayPal Checkout
           </div>
-          <h1 className="text-4xl font-light leading-tight font-serif">Make a<br />Payment</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-light leading-tight font-serif">Make a<br />Payment</h1>
         </div>
 
-        <div className="p-8">
+        <div className="p-4 sm:p-6 md:p-8">
           {/* Switch to Stripe */}
           <div className="mb-6 text-center">
             <Link
