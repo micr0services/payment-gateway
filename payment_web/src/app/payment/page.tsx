@@ -63,7 +63,7 @@ export default function PaymentSelectionPage() {
         </div>
 
         <div className="mt-12 text-center">
-          <Link href="/" className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-text-muted hover:text-text transition-colors">
+          <Link href="/dashboard" className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-text-muted hover:text-text transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>

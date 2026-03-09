@@ -37,7 +37,7 @@ export default function Header() {
           </Link>
 
           <Link
-            href="/"
+            href="/dashboard"
             className="relative flex items-center gap-2 px-3 sm:px-5 bg-transparent border-none cursor-pointer font-mono text-xs uppercase tracking-[0.18em] text-gold-light whitespace-nowrap"
           >
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">

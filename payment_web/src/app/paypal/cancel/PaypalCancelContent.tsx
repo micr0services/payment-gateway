@@ -14,7 +14,7 @@ export default function PaypalCancelContent() {
       </p>
       <div className="mt-6">
         <a
-          href="/"
+          href="/dashboard"
           className="inline-flex items-center px-4 py-2 bg-gold hover:bg-gold-light text-obsidian font-mono text-xs uppercase tracking-[0.15em] rounded-sm transition-colors"
         >
           Return to Home

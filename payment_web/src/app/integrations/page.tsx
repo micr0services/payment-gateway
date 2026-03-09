@@ -68,7 +68,7 @@ export default function IntegrationsPage() {
             We've received your integration inquiry and will get back to you within 24 hours.
           </p>
           <Link
-            href="/"
+            href="/dashboard"
             className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-gold hover:text-gold-light transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
