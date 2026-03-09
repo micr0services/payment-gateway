@@ -148,28 +148,28 @@ const projects = [
 
 export default function ProjectsPage() {
   return (
-    <div className="p-8 relative overflow-hidden min-h-[calc(100vh-60px)]">
+    <div className="p-4 sm:p-6 md:p-8 relative overflow-hidden min-h-[calc(100vh-60px)]">
       <div className="relative z-10 w-full mx-auto">
-        <div className="text-center mb-16">
-          <div className="text-xs uppercase tracking-[0.25em] text-gold mb-3 flex items-center justify-center gap-2">
+        <div className="text-center mb-8 sm:mb-12 md:mb-16">
+          <div className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-gold mb-3 flex items-center justify-center gap-2">
             <span className="text-[0.4rem]">◆</span>
             Portfolio
           </div>
-          <h1 className="text-4xl font-light leading-tight font-serif">Other Projects</h1>
-          <p className="text-text-muted mt-4 max-w-2xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-light leading-tight font-serif">Other Projects</h1>
+          <p className="text-text-muted mt-3 sm:mt-4 max-w-2xl mx-auto text-sm sm:text-base">
             A collection of software projects and applications I've developed, showcasing various technologies and problem-solving approaches.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
           {projects.map((project) => (
             <div
               key={project.id}
-              className="w-full bg-surface border border-border rounded-sm shadow-[0_0_0_1px_rgba(201,168,76,0.08),0_40px_80px_rgba(0,0,0,0.6),0_0_120px_rgba(201,168,76,0.04)] p-8 hover:border-[rgba(201,168,76,0.3)] transition-all duration-300 hover:transform hover:scale-[1.02]"
+              className="w-full bg-surface border border-border rounded-sm shadow-[0_0_0_1px_rgba(201,168,76,0.08),0_40px_80px_rgba(0,0,0,0.6),0_0_120px_rgba(201,168,76,0.04)] p-4 sm:p-6 md:p-8 hover:border-[rgba(201,168,76,0.3)] transition-all duration-300 hover:transform hover:scale-[1.02]"
             >
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-2xl font-serif font-light uppercase tracking-[0.1em] centered">{project.title}</h3>
-                <span className={`px-3 py-1 text-sm uppercase tracking-[0.1em] rounded-sm ${
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 sm:mb-4 gap-2">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-serif font-light uppercase tracking-[0.1em]">{project.title}</h3>
+                <span className={`px-2 sm:px-3 py-1 text-[10px] sm:text-sm uppercase tracking-[0.1em] rounded-sm self-start ${
                   project.status === 'Active'
                     ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                     : project.status === 'In Development'
@@ -182,17 +182,17 @@ export default function ProjectsPage() {
                 </span>
               </div>
 
-              <p className="text-text-muted text-base leading-relaxed mb-6">
+              <p className="text-text-muted text-sm sm:text-base leading-relaxed mb-4 sm:mb-6">
                 {project.description}
               </p>
 
-              <div className="mb-6">
-                <h4 className="text-sm uppercase tracking-[0.2em] text-gold mb-3">Technologies</h4>
-                <div className="flex flex-wrap gap-2">
+              <div className="mb-4 sm:mb-6">
+                <h4 className="text-[10px] sm:text-sm uppercase tracking-[0.2em] text-gold mb-2 sm:mb-3">Technologies</h4>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {project.technologies.map((tech) => (
                     <span
                       key={tech}
-                      className="px-3 py-1 bg-surface-2 border border-border rounded-sm text-sm font-mono text-text-muted"
+                      className="px-2 sm:px-3 py-1 bg-surface-2 border border-border rounded-sm text-[10px] sm:text-sm font-mono text-text-muted"
                     >
                       {tech}
                     </span>
@@ -200,30 +200,43 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
-              <div className="mb-6">
-                <h4 className="text-sm uppercase tracking-[0.2em] text-gold mb-3">Key Features</h4>
+              <div className="mb-4 sm:mb-6">
+                <h4 className="text-[10px] sm:text-sm uppercase tracking-[0.2em] text-gold mb-2 sm:mb-3">Key Features</h4>
                 <ul className="space-y-1">
                   {project.features.map((feature, index) => (
-                    <li key={index} className="text-base text-text-muted flex items-center gap-2">
-                      <span className="w-1 h-1 bg-gold rounded-full flex-shrink-0" />
-                      {feature}
+                    <li key={index} className="text-sm sm:text-base text-text-muted flex items-start gap-2">
+                      <span className="w-1 h-1 bg-gold rounded-full flex-shrink-0 mt-2" />
+                      <span className="leading-relaxed">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                 {project.demo && (
                   <a
                     href={project.demo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.15em] text-gold hover:text-gold-light transition-colors"
+                    className="inline-flex items-center gap-2 text-[10px] sm:text-sm uppercase tracking-[0.15em] text-gold hover:text-gold-light transition-colors"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
                     Live Demo
+                  </a>
+                )}
+                {project.github && (
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[10px] sm:text-sm uppercase tracking-[0.15em] text-text-muted hover:text-text transition-colors"
+                  >
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    View Code
                   </a>
                 )}
               </div>
@@ -231,22 +244,22 @@ export default function ProjectsPage() {
           ))}
         </div>
 
-        <div className="mt-16 text-center">
-          <div className="mb-8">
-            <h2 className="text-2xl font-serif font-light mb-4">Interested in Collaboration?</h2>
-            <p className="text-text-muted max-w-2xl mx-auto">
+        <div className="mt-8 sm:mt-12 md:mt-16 text-center">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-serif font-light mb-3 sm:mb-4">Interested in Collaboration?</h2>
+            <p className="text-text-muted max-w-2xl mx-auto text-sm sm:text-base">
               I'm always open to discussing new projects, partnerships, or technical challenges.
               Whether you need custom software development, API integrations, or technical consulting,
               let's explore how we can work together.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Link
               href="/integrations"
-              className="inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-obsidian font-mono text-xs uppercase tracking-[0.15em] py-3 px-6 rounded-sm transition-colors duration-200"
+              className="inline-flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-obsidian font-mono text-[10px] sm:text-xs uppercase tracking-[0.15em] py-3 px-4 sm:px-6 rounded-sm transition-colors duration-200"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
               Start a Project
@@ -254,9 +267,9 @@ export default function ProjectsPage() {
 
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-text-muted hover:text-text transition-colors"
+              className="inline-flex items-center justify-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] text-text-muted hover:text-text transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back to Home

@@ -97,49 +97,49 @@ export default function TransactionsPage() {
 
       <main className="max-w-full mx-auto p-12">
         {/* Header */}
-        <div className="mb-12 animate-[fadeUp_0.6s_ease_both]">
-          <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3 flex items-center gap-3">
-            <div className="w-6 h-px bg-gold" />
+        <div className="mb-8 sm:mb-12 animate-[fadeUp_0.6s_ease_both]">
+          <div className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-gold mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3">
+            <div className="w-4 sm:w-6 h-px bg-gold" />
             Dashboard
           </div>
-          <h1 className="font-serif text-5xl font-light tracking-[0.02em] leading-none">Transaction<br />History</h1>
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-[0.02em] leading-none">Transaction<br />History</h1>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-px bg-border border border-border mb-10 animate-[fadeUp_0.6s_0.1s_ease_both]">
-          <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
-            <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Total Transactions</div>
-            <div className="font-serif text-3xl font-light text-text leading-none">{transactions.length}</div>
-            <div className="text-xs text-text mt-1 tracking-[0.08em]">All time</div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border border border-border mb-6 sm:mb-10 animate-[fadeUp_0.6s_0.1s_ease_both]">
+          <div className="bg-surface p-4 sm:p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+            <div className="text-[0.5rem] sm:text-[0.58rem] uppercase tracking-[0.2em] text-text mb-2 sm:mb-3">Total Transactions</div>
+            <div className="font-serif text-2xl sm:text-3xl font-light text-text leading-none">{transactions.length}</div>
+            <div className="text-[10px] sm:text-xs text-text mt-1 tracking-[0.08em]">All time</div>
           </div>
-          <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
-            <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Completed</div>
-            <div className="font-serif text-3xl font-light text-gold-light leading-none">{completedCount}</div>
-            <div className="text-xs text-text mt-1 tracking-[0.08em]">
+          <div className="bg-surface p-4 sm:p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+            <div className="text-[0.5rem] sm:text-[0.58rem] uppercase tracking-[0.2em] text-text mb-2 sm:mb-3">Completed</div>
+            <div className="font-serif text-2xl sm:text-3xl font-light text-gold-light leading-none">{completedCount}</div>
+            <div className="text-[10px] sm:text-xs text-text mt-1 tracking-[0.08em]">
               {transactions.length > 0
                 ? `${Math.round((completedCount / transactions.length) * 100)}% success rate`
                 : 'No data'}
             </div>
           </div>
-          <div className="bg-surface p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
-            <div className="text-[0.58rem] uppercase tracking-[0.2em] text-text mb-3">Volume Processed</div>
-            <div className="font-serif text-3xl font-light text-gold-light leading-none">
+          <div className="bg-surface p-4 sm:p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+            <div className="text-[0.5rem] sm:text-[0.58rem] uppercase tracking-[0.2em] text-text mb-2 sm:mb-3">Volume Processed</div>
+            <div className="font-serif text-2xl sm:text-3xl font-light text-gold-light leading-none">
               {totalVolume > 0
                 ? `$${(totalVolume / 100).toFixed(0)}`
                 : '$0'}
             </div>
-            <div className="text-xs text-text mt-1 tracking-[0.08em]">USD equivalent</div>
+            <div className="text-[10px] sm:text-xs text-text mt-1 tracking-[0.08em]">USD equivalent</div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="flex gap-3 items-center mb-6 flex-wrap animate-[fadeUp_0.6s_0.2s_ease_both]">
-          <span className="text-xs uppercase tracking-[0.2em] text-text mr-1">Filter by</span>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-start sm:items-center mb-4 sm:mb-6 flex-wrap animate-[fadeUp_0.6s_0.2s_ease_both]">
+          <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-text mr-1">Filter by</span>
 
           <select
             value={filters.gateway}
             onChange={(e) => setFilters({ ...filters, gateway: e.target.value })}
-            className="bg-surface-2 border border-border text-text font-mono text-sm tracking-[0.06em] py-2 px-3 pr-8 rounded-none appearance-none cursor-pointer bg-no-repeat bg-right bg-[length:10px_6px] transition-colors focus:outline-none focus:border-gold/40"
+            className="bg-surface-2 border border-border text-text font-mono text-xs sm:text-sm tracking-[0.06em] py-2 px-3 pr-8 rounded-none appearance-none cursor-pointer bg-no-repeat bg-right bg-[length:10px_6px] transition-colors focus:outline-none focus:border-gold/40 w-full sm:w-auto"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9a84c' stroke-width='1.2' fill='none'/%3E%3C/svg%3E")` }}
           >
             <option value="">All Gateways</option>
@@ -150,7 +150,7 @@ export default function TransactionsPage() {
           <select
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="bg-surface-2 border border-border text-text font-mono text-sm tracking-[0.06em] py-2 px-3 pr-8 rounded-none appearance-none cursor-pointer bg-no-repeat bg-right bg-[length:10px_6px] transition-colors focus:outline-none focus:border-gold/40"
+            className="bg-surface-2 border border-border text-text font-mono text-xs sm:text-sm tracking-[0.06em] py-2 px-3 pr-8 rounded-none appearance-none cursor-pointer bg-no-repeat bg-right bg-[length:10px_6px] transition-colors focus:outline-none focus:border-gold/40 w-full sm:w-auto"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9a84c' stroke-width='1.2' fill='none'/%3E%3C/svg%3E")` }}
           >
             <option value="">All Statuses</option>
@@ -163,7 +163,7 @@ export default function TransactionsPage() {
           <button
             onClick={fetchAllTransactions}
             disabled={loading}
-            className="ml-auto bg-transparent border border-border text-text font-mono text-xs uppercase tracking-[0.15em] py-2 px-4 cursor-pointer rounded-none transition-all duration-200 hover:border-gold hover:text-gold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="ml-auto bg-transparent border border-border text-text font-mono text-[10px] sm:text-xs uppercase tracking-[0.15em] py-2 px-3 sm:px-4 cursor-pointer rounded-none transition-all duration-200 hover:border-gold hover:text-gold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto sm:ml-auto justify-center sm:justify-start"
           >
             <span className="transition-transform duration-400 hover:rotate-180">↻</span>
             Refresh
@@ -190,48 +190,81 @@ export default function TransactionsPage() {
 
         {/* Table */}
         {!loading && transactions.length > 0 && (
-          <div className="border border-border overflow-hidden animate-[fadeUp_0.6s_0.3s_ease_both] w-full">
-            <table className="w-full border-collapse table-fixed">
-              <thead>
-                <tr className="bg-obsidian border-b border-border">
-                  <th className="hidden md:table-cell md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">ID</th>
-                  <th className="w-1/4 md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Gateway</th>
-                  <th className="w-1/4 md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Amount</th>
-                  <th className="w-1/4 md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Status</th>
-                  <th className="hidden md:table-cell md:w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Transaction ID</th>
-                  <th className="w-1/4 md:w-1/6 py-4 px-5 text-right text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((tx, i) => {
-                  const s = getStatus(tx.status);
-                  const d = formatDate(tx.created_at);
-                  return (
-                    <tr key={tx.id} className="border-b border-white/3 transition-colors duration-150 cursor-pointer hover:bg-gold/5 last:border-b-0" style={{ animationDelay: `${i * 0.03}s` }}>
-                      <td className="hidden md:table-cell md:w-1/6 py-4 px-5">
-                        <Link href={`/transaction/${tx.id}`} className="block">
+          <>
+            {/* Mobile Card Layout */}
+            <div className="md:hidden space-y-3 animate-[fadeUp_0.6s_0.3s_ease_both]">
+              {transactions.map((tx, i) => {
+                const s = getStatus(tx.status);
+                const d = formatDate(tx.created_at);
+                return (
+                  <Link key={tx.id} href={`/transaction/${tx.id}`} className="block">
+                    <div className="border border-border bg-surface-2 p-4 transition-colors duration-150 hover:bg-gold/5" style={{ animationDelay: `${i * 0.03}s` }}>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded bg-surface-3 inline-flex items-center justify-center text-xs text-gold border border-gold/20">
+                            {tx.gateway === 'stripe' ? 'S' : 'P'}
+                          </span>
+                          <span className="text-sm font-medium text-text capitalize">{tx.gateway}</span>
+                        </div>
+                        <span
+                          className="inline-flex items-center gap-1 py-1 px-2 rounded text-xs uppercase tracking-[0.1em]"
+                          style={{ backgroundColor: s.bg, color: s.color }}
+                        >
+                          <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: s.dot }} />
+                          {tx.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="font-mono text-xs text-text-dim">#{String(tx.id).padStart(6, '0')}</span>
+                          <span className="text-xs text-text-dim">{d.date} {d.time}</span>
+                        </div>
+                        <span className="font-serif text-xl font-normal text-text">
+                          {formatAmount(tx.amount, tx.currency)}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table Layout */}
+            <div className="hidden md:block border border-border overflow-hidden animate-[fadeUp_0.6s_0.3s_ease_both] w-full">
+              <table className="w-full border-collapse table-fixed">
+                <thead>
+                  <tr className="bg-obsidian border-b border-border">
+                    <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">ID</th>
+                    <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Gateway</th>
+                    <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Amount</th>
+                    <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Status</th>
+                    <th className="w-1/6 py-4 px-5 text-left text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Transaction ID</th>
+                    <th className="w-1/6 py-4 px-5 text-right text-[0.58rem] uppercase tracking-[0.2em] text-text font-normal whitespace-nowrap">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.map((tx, i) => {
+                    const s = getStatus(tx.status);
+                    const d = formatDate(tx.created_at);
+                    return (
+                      <tr key={tx.id} className="border-b border-white/3 transition-colors duration-150 cursor-pointer hover:bg-gold/5 last:border-b-0" style={{ animationDelay: `${i * 0.03}s` }}>
+                        <td className="w-1/6 py-4 px-5">
                           <span className="font-mono text-sm text-text">#{String(tx.id).padStart(6, '0')}</span>
-                        </Link>
-                      </td>
-                      <td className="w-1/4 md:w-1/6 py-4 px-5">
-                        <Link href={`/transaction/${tx.id}`} className="block">
+                        </td>
+                        <td className="w-1/6 py-4 px-5">
                           <span className="inline-flex items-center gap-1 tracking-[0.06em] capitalize">
                             <span className="w-5 h-5 rounded bg-surface-3 inline-flex items-center justify-center text-xs text-gold border border-gold/20">
                               {tx.gateway === 'stripe' ? 'S' : 'P'}
                             </span>
                             <span className="text-text">{tx.gateway}</span>
                           </span>
-                        </Link>
-                      </td>
-                      <td className="w-1/4 md:w-1/6 py-4 px-5">
-                        <Link href={`/transaction/${tx.id}`} className="block">
+                        </td>
+                        <td className="w-1/6 py-4 px-5">
                           <span className="font-serif text-lg font-normal text-text">
                             {formatAmount(tx.amount, tx.currency)}
                           </span>
-                        </Link>
-                      </td>
-                      <td className="w-1/4 md:w-1/6 py-4 px-5">
-                        <Link href={`/transaction/${tx.id}`} className="block">
+                        </td>
+                        <td className="w-1/6 py-4 px-5">
                           <span
                             className="inline-flex items-center gap-1 py-1 px-3 rounded text-xs uppercase tracking-[0.1em]"
                             style={{ backgroundColor: s.bg, color: s.color }}
@@ -239,37 +272,33 @@ export default function TransactionsPage() {
                             <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: s.dot }} />
                             {tx.status}
                           </span>
-                        </Link>
-                      </td>
-                      <td className="hidden md:table-cell md:w-1/6 py-4 px-5">
-                        <Link href={`/transaction/${tx.id}`} className="block">
+                        </td>
+                        <td className="w-1/6 py-4 px-5">
                           <span className="text-sm text-text tracking-[0.03em] max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
                             {tx.transaction_id || '—'}
                           </span>
-                        </Link>
-                      </td>
-                      <td className="w-1/6 py-4 px-5 text-right">
-                        <Link href={`/transaction/${tx.id}`} className="block">
+                        </td>
+                        <td className="w-1/6 py-4 px-5 text-right">
                           <div className="flex flex-col gap-1 items-end">
                             <span className="text-sm text-text">{d.date}</span>
                             <span className="text-xs text-text">{d.time}</span>
                           </div>
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* Empty */}
         {!loading && transactions.length === 0 && (
-          <div className="text-center py-24 border border-border animate-[fadeUp_0.4s_ease_both]">
-            <div className="text-4xl mb-4 opacity-30">◈</div>
-            <div className="font-serif text-2xl font-light text-text-muted mb-2">No transactions found</div>
-            <div className="text-sm tracking-[0.1em] text-text-dim">Try adjusting your filters</div>
+          <div className="text-center py-12 sm:py-24 border border-border animate-[fadeUp_0.4s_ease_both]">
+            <div className="text-2xl sm:text-4xl mb-4 opacity-30">◈</div>
+            <div className="font-serif text-lg sm:text-2xl font-light text-text-muted mb-2">No transactions found</div>
+            <div className="text-xs sm:text-sm tracking-[0.1em] text-text-dim">Try adjusting your filters</div>
           </div>
         )}
       </main>

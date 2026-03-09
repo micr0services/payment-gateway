@@ -16,7 +16,7 @@ const SCRIPT: TypewriterLine[] = [
   { id: 'spacer1', text: '', className: '', prompt: false, speed: 0, delay: 120 },
   { id: 'hello', text: 'HELLO, WORLD.', className: 'text-green-400 text-xs uppercase tracking-widest', prompt: true, speed: 45 },
   { id: 'spacer2', text: '', className: '', prompt: false, speed: 0, delay: 180 },
-  { id: 'name', text: 'I am engineer Wilfred.', className: 'text-xl sm:text-2xl md:text-3xl font-bold text-gold tracking-wider', prompt: true, speed: 60, delay: 200 },
+  { id: 'name', text: 'I am Engineer Wilfred.', className: 'text-xl sm:text-2xl md:text-3xl font-bold text-gold tracking-wider', prompt: true, speed: 60, delay: 200 },
   { id: 'spacer3', text: '', className: '', prompt: false, speed: 0, delay: 120 },
   { id: 'bio1', text: 'Backend Systems Engineer.', className: 'text-sm md:text-base text-text leading-relaxed', prompt: true, speed: 38 },
   { id: 'bio2', text: 'Building secure, scalable financial infrastructure.', className: 'text-sm md:text-base text-text leading-relaxed', prompt: true, speed: 38 },

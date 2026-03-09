@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'providers/payment_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/landing_screen.dart';
 import 'screens/payment_screen.dart';
 import 'screens/paypal_payment_screen.dart';
 import 'screens/projects_screen.dart';
@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
             bodyMedium: TextStyle(color: Color(0xFFE0E0E0)),
           ),
         ),
-        home: const HomeScreen(),
+        home: const LandingScreen(),
         routes: {
           '/payment': (context) => PaymentScreen(),
           '/paypal': (context) => PayPalPaymentScreen(),
@@ -89,6 +89,7 @@ class MyApp extends StatelessWidget {
           '/cancel': (context) => PaymentCancelScreen(),
           '/projects': (context) => ProjectsScreen(),
           '/integrations': (context) => IntegrationsScreen(),
+          '/dashboard': (context) => HomeScreen(),
         },
       ),
     );
