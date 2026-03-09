@@ -33,7 +33,7 @@ export default function Header() {
               <path d="M1 6.5h14" />
               <path d="M4 10h3" strokeLinecap="round" />
             </svg>
-            <span className="hidden sm:inline">Make Payment</span>
+            <span className="text-[10px] sm:text-xs">Make Payment</span>
           </Link>
 
           <Link
@@ -43,7 +43,7 @@ export default function Header() {
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <path d="M2 4h12M2 8h8M2 12h10" strokeLinecap="round" />
             </svg>
-            <span className="hidden sm:inline">Transactions</span>
+            <span className="text-[10px] sm:text-xs">Transactions</span>
             <span className="w-1 h-1 rounded-full bg-gold opacity-100" />
             <div className="absolute bottom-0 left-3 sm:left-5 right-3 sm:right-5 h-px bg-gold scale-x-100" />
           </Link>
@@ -55,7 +55,7 @@ export default function Header() {
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <path d="M8 1v6m0 0v6m0-6h6m-6 0H2" strokeLinecap="round" />
             </svg>
-            <span className="hidden sm:inline">Integrations</span>
+            <span className="text-[10px] sm:text-xs">Integrations</span>
           </Link>
 
           <Link
@@ -65,7 +65,7 @@ export default function Header() {
             <svg className="w-4 h-4 opacity-60 transition-opacity duration-200" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
               <path d="M2 3h12v11H2zM7 8l3 3m0 0l3-3m-3 3V3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="hidden sm:inline">Projects</span>
+            <span className="text-[10px] sm:text-xs">Projects</span>
           </Link>
         </div>
 

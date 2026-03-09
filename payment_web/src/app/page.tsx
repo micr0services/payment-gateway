@@ -230,7 +230,7 @@ export default function Home() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-lg">📊</span>
-                <span className="text-sm uppercase tracking-wider">Dashboard</span>
+                <span className="text-[10px] uppercase tracking-wider">Dashboard</span>
               </a>
               <a
                 href="/integrations"
@@ -238,7 +238,15 @@ export default function Home() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-lg">🔗</span>
-                <span className="text-sm uppercase tracking-wider">Integrations</span>
+                <span className="text-[10px] uppercase tracking-wider">Integrations</span>
+              </a>
+              <a
+                href="/projects"
+                className="flex items-center gap-3 text-gold hover:text-gold-light transition-colors py-2 px-3 rounded hover:bg-gold/5"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="text-lg">📁</span>
+                <span className="text-[10px] uppercase tracking-wider">Projects</span>
               </a>
               <div className="border-t border-gold/20 my-2" />
               <a
@@ -247,7 +255,7 @@ export default function Home() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-lg">💳</span>
-                <span className="text-sm uppercase tracking-wider">Pay Stripe</span>
+                <span className="text-[10px] uppercase tracking-wider">Pay Stripe</span>
               </a>
               <a
                 href="/payment/paypal"
@@ -255,7 +263,7 @@ export default function Home() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="text-lg">💰</span>
-                <span className="text-sm uppercase tracking-wider">Pay PayPal</span>
+                <span className="text-[10px] uppercase tracking-wider">Pay PayPal</span>
               </a>
             </div>
           </div>
@@ -272,7 +280,7 @@ export default function Home() {
             <div className="h-4 sm:h-8" />
             <div className="flex gap-1.5 sm:gap-2.5 mb-6 sm:mb-8">
               <span className="text-gold flex-shrink-0 text-sm sm:text-base">▸</span>
-              <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm">
+              <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 text-[10px] sm:text-xs md:text-sm">
                 <a href="/dashboard" className="text-gold hover:text-gold-light transition-colors underline">
                   <span className="inline">Dashboard</span>
                 </a>
@@ -284,6 +292,9 @@ export default function Home() {
                 </a>
                 <a href="/integrations" className="text-gold hover:text-gold-light transition-colors underline">
                   <span className="inline">Integrations</span>
+                </a>
+                <a href="/projects" className="text-gold hover:text-gold-light transition-colors underline">
+                  <span className="inline">Projects</span>
                 </a>
               </div>
             </div>
