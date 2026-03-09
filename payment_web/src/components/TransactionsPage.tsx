@@ -99,20 +99,26 @@ export default function TransactionsPage() {
         {/* Header */}
         <div className="mb-8 sm:mb-12 animate-[fadeUp_0.6s_ease_both]">
           <div className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-gold mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3">
-            <div className="w-4 sm:w-6 h-px bg-gold" />
+            <div className="text-gold">◆</div>
             Dashboard
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-[0.02em] leading-none">Transaction<br />History</h1>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border border border-border mb-6 sm:mb-10 animate-[fadeUp_0.6s_0.1s_ease_both]">
-          <div className="bg-surface p-4 sm:p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 mb-6 sm:mb-10 animate-[fadeUp_0.6s_0.1s_ease_both]">
+          <div className="bg-[#12151F] border border-[#404040] p-4 sm:p-6 relative overflow-hidden shadow-2xl"
+               style={{
+                 boxShadow: '0 40px 40px rgba(201, 168, 76, 0.08), 0 0 80px rgba(0, 0, 0, 0.6)'
+               }}>
             <div className="text-[0.5rem] sm:text-[0.58rem] uppercase tracking-[0.2em] text-text mb-2 sm:mb-3">Total Transactions</div>
             <div className="font-serif text-2xl sm:text-3xl font-light text-text leading-none">{transactions.length}</div>
             <div className="text-[10px] sm:text-xs text-text mt-1 tracking-[0.08em]">All time</div>
           </div>
-          <div className="bg-surface p-4 sm:p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+          <div className="bg-[#12151F] border border-[#404040] p-4 sm:p-6 relative overflow-hidden shadow-2xl"
+               style={{
+                 boxShadow: '0 40px 40px rgba(201, 168, 76, 0.08), 0 0 80px rgba(0, 0, 0, 0.6)'
+               }}>
             <div className="text-[0.5rem] sm:text-[0.58rem] uppercase tracking-[0.2em] text-text mb-2 sm:mb-3">Completed</div>
             <div className="font-serif text-2xl sm:text-3xl font-light text-gold-light leading-none">{completedCount}</div>
             <div className="text-[10px] sm:text-xs text-text mt-1 tracking-[0.08em]">
@@ -121,7 +127,10 @@ export default function TransactionsPage() {
                 : 'No data'}
             </div>
           </div>
-          <div className="bg-surface p-4 sm:p-6 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+          <div className="bg-[#12151F] border border-[#404040] p-4 sm:p-6 relative overflow-hidden shadow-2xl"
+               style={{
+                 boxShadow: '0 40px 40px rgba(201, 168, 76, 0.08), 0 0 80px rgba(0, 0, 0, 0.6)'
+               }}>
             <div className="text-[0.5rem] sm:text-[0.58rem] uppercase tracking-[0.2em] text-text mb-2 sm:mb-3">Volume Processed</div>
             <div className="font-serif text-2xl sm:text-3xl font-light text-gold-light leading-none">
               {totalVolume > 0
@@ -133,58 +142,76 @@ export default function TransactionsPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-start sm:items-center mb-4 sm:mb-6 flex-wrap animate-[fadeUp_0.6s_0.2s_ease_both]">
-          <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-text mr-1">Filter by</span>
+        <div className="mb-6 sm:mb-10 animate-[fadeUp_0.6s_0.2s_ease_both]">
+          <div className="bg-[#12151F] border border-[#404040] p-4 sm:p-6 shadow-2xl"
+               style={{
+                 boxShadow: '0 40px 40px rgba(201, 168, 76, 0.08), 0 0 80px rgba(0, 0, 0, 0.6)'
+               }}>
+            <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-gold mb-4">Filters</div>
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-text mb-2">Gateway</div>
+                <select
+                  value={filters.gateway}
+                  onChange={(e) => setFilters({ ...filters, gateway: e.target.value })}
+                  className="w-full bg-[#1A1A1A] border border-[#404040] text-text font-mono text-xs sm:text-sm tracking-[0.06em] py-3 px-4 rounded-none appearance-none cursor-pointer"
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9a84c' stroke-width='1.2' fill='none'/%3E%3C/svg%3E")`, backgroundPosition: 'right 12px center', backgroundRepeat: 'no-repeat' }}
+                >
+                  <option value="">All Gateways</option>
+                  <option value="stripe">Stripe</option>
+                  <option value="paypal">PayPal</option>
+                </select>
+              </div>
 
-          <select
-            value={filters.gateway}
-            onChange={(e) => setFilters({ ...filters, gateway: e.target.value })}
-            className="bg-surface-2 border border-border text-text font-mono text-xs sm:text-sm tracking-[0.06em] py-2 px-3 pr-8 rounded-none appearance-none cursor-pointer bg-no-repeat bg-right bg-[length:10px_6px] transition-colors focus:outline-none focus:border-gold/40 w-full sm:w-auto"
-            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9a84c' stroke-width='1.2' fill='none'/%3E%3C/svg%3E")` }}
-          >
-            <option value="">All Gateways</option>
-            <option value="stripe">Stripe</option>
-            <option value="paypal">PayPal</option>
-          </select>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-text mb-2">Status</div>
+                <select
+                  value={filters.status}
+                  onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                  className="w-full bg-[#1A1A1A] border border-[#404040] text-text font-mono text-xs sm:text-sm tracking-[0.06em] py-3 px-4 rounded-none appearance-none cursor-pointer"
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9a84c' stroke-width='1.2' fill='none'/%3E%3C/svg%3E")`, backgroundPosition: 'right 12px center', backgroundRepeat: 'no-repeat' }}
+                >
+                  <option value="">All Statuses</option>
+                  <option value="completed">Completed</option>
+                  <option value="pending">Pending</option>
+                  <option value="failed">Failed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
 
-          <select
-            value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="bg-surface-2 border border-border text-text font-mono text-xs sm:text-sm tracking-[0.06em] py-2 px-3 pr-8 rounded-none appearance-none cursor-pointer bg-no-repeat bg-right bg-[length:10px_6px] transition-colors focus:outline-none focus:border-gold/40 w-full sm:w-auto"
-            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9a84c' stroke-width='1.2' fill='none'/%3E%3C/svg%3E")` }}
-          >
-            <option value="">All Statuses</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-            <option value="failed">Failed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-
-          <button
-            onClick={fetchAllTransactions}
-            disabled={loading}
-            className="ml-auto bg-transparent border border-border text-text font-mono text-[10px] sm:text-xs uppercase tracking-[0.15em] py-2 px-3 sm:px-4 cursor-pointer rounded-none transition-all duration-200 hover:border-gold hover:text-gold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto sm:ml-auto justify-center sm:justify-start"
-          >
-            <span className="transition-transform duration-400 hover:rotate-180">↻</span>
-            Refresh
-          </button>
+              <button
+                onClick={fetchAllTransactions}
+                disabled={loading}
+                className="bg-gold border border-gold text-obsidian font-mono text-[10px] sm:text-xs uppercase tracking-[0.15em] py-3 px-6 cursor-pointer rounded-none transition-all duration-200 hover:bg-gold-light flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="w-4 h-4 border border-obsidian/30 border-t-obsidian rounded-full animate-spin" />
+                ) : (
+                  <span className="transition-transform duration-400 hover:rotate-180">↻</span>
+                )}
+                Refresh
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="bg-red-500/8 border border-red-500/25 text-red-400 p-4 text-sm tracking-[0.04em] mb-6">
-            ⚠ {error}
+          <div className="bg-[#E05C5C]/10 border border-[#E05C5C]/30 p-4 mb-6 animate-[fadeUp_0.4s_ease_both]">
+            <div className="flex items-center gap-3">
+              <span className="text-[#E05C5C]">⚠</span>
+              <span className="text-[#E05C5C] text-sm">{error}</span>
+            </div>
           </div>
         )}
 
         {/* Loading */}
         {loading && (
-          <div className="flex flex-col items-center py-24 gap-6 animate-[fadeUp_0.4s_ease_both]">
+          <div className="flex flex-col items-center py-12 gap-4 animate-[fadeUp_0.4s_ease_both]">
             <div className="w-10 h-10 relative">
-              <div className="absolute inset-0 rounded-full border border-transparent border-t-gold animate-spin" />
-              <div className="absolute inset-0 rounded-full border border-transparent border-b-gold/30 animate-spin animation-reverse animation-duration-1500ms" />
+              <div className="w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full animate-spin mx-auto" />
             </div>
-            <span className="text-sm uppercase tracking-[0.2em] text-text-muted">Fetching transactions</span>
+            <span className="text-sm uppercase tracking-[0.2em] text-[#B0B0B0]">Fetching transactions</span>
           </div>
         )}
 
@@ -192,37 +219,28 @@ export default function TransactionsPage() {
         {!loading && transactions.length > 0 && (
           <>
             {/* Mobile Card Layout */}
-            <div className="md:hidden space-y-3 animate-[fadeUp_0.6s_0.3s_ease_both]">
+            <div className="md:hidden space-y-4 animate-[fadeUp_0.6s_0.3s_ease_both]">
               {transactions.map((tx, i) => {
                 const s = getStatus(tx.status);
                 const d = formatDate(tx.created_at);
                 return (
                   <Link key={tx.id} href={`/transaction/${tx.id}`} className="block">
-                    <div className="border border-border bg-surface-2 p-4 transition-colors duration-150 hover:bg-gold/5" style={{ animationDelay: `${i * 0.03}s` }}>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="w-6 h-6 rounded bg-surface-3 inline-flex items-center justify-center text-xs text-gold border border-gold/20">
-                            {tx.gateway === 'stripe' ? 'S' : 'P'}
-                          </span>
-                          <span className="text-sm font-medium text-text capitalize">{tx.gateway}</span>
-                        </div>
-                        <span
-                          className="inline-flex items-center gap-1 py-1 px-2 rounded text-xs uppercase tracking-[0.1em]"
-                          style={{ backgroundColor: s.bg, color: s.color }}
-                        >
-                          <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: s.dot }} />
+                    <div className="bg-[#12151F] border border-[#404040] p-5 rounded-[4px] shadow-2xl flex flex-col gap-2"
+                         style={{ boxShadow: '0 40px 40px rgba(201, 168, 76, 0.08), 0 0 80px rgba(0, 0, 0, 0.6)' }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[24px] font-light text-[#E0E0E0]">{formatAmount(tx.amount, tx.currency)}</span>
+                        <span className="px-3 py-1.5 rounded-full text-xs uppercase tracking-[0.1em] font-medium" style={{ backgroundColor: s.bg, color: s.color }}>
                           {tx.status}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="font-mono text-xs text-text-dim">#{String(tx.id).padStart(6, '0')}</span>
-                          <span className="text-xs text-text-dim">{d.date} {d.time}</span>
-                        </div>
-                        <span className="font-serif text-xl font-normal text-text">
-                          {formatAmount(tx.amount, tx.currency)}
-                        </span>
+                      <div className="flex items-center gap-4 mb-1">
+                        <span className="text-xs uppercase tracking-[1.5px] text-[#B0B0B0] font-medium">{tx.gateway.toUpperCase()}</span>
+                        <span className="text-xs text-[#7A7A8A] uppercase">{tx.currency.toUpperCase()}</span>
                       </div>
+                      <div className="text-xs text-[#7A7A8A]">{d.date} • {d.time}</div>
+                      {tx.transaction_id && (
+                        <div className="text-[10px] text-[#7A7A8A] mt-1">ID: {tx.transaction_id}</div>
+                      )}
                     </div>
                   </Link>
                 );
@@ -295,10 +313,10 @@ export default function TransactionsPage() {
 
         {/* Empty */}
         {!loading && transactions.length === 0 && (
-          <div className="text-center py-12 sm:py-24 border border-border animate-[fadeUp_0.4s_ease_both]">
-            <div className="text-2xl sm:text-4xl mb-4 opacity-30">◈</div>
-            <div className="font-serif text-lg sm:text-2xl font-light text-text-muted mb-2">No transactions found</div>
-            <div className="text-xs sm:text-sm tracking-[0.1em] text-text-dim">Try adjusting your filters</div>
+          <div className="text-center py-12 animate-[fadeUp_0.4s_ease_both]">
+            <div className="text-5xl opacity-30 text-[#B0B0B0] mb-4">◈</div>
+            <div className="font-serif text-xl font-light text-[#B0B0B0] mb-2">No transactions yet</div>
+            <div className="text-sm text-[#808080]">Make a payment to see your transaction history</div>
           </div>
         )}
       </main>

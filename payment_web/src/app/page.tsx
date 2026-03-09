@@ -273,17 +273,17 @@ export default function Home() {
             <div className="flex gap-1.5 sm:gap-2.5 mb-6 sm:mb-8">
               <span className="text-gold flex-shrink-0 text-sm sm:text-base">▸</span>
               <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm">
-                <a href="/dashboard" className="text-gold hover:text-gold-light transition-colors underline hidden sm:inline">
-                  dashboard
+                <a href="/dashboard" className="text-gold hover:text-gold-light transition-colors underline">
+                  <span className="inline">Dashboard</span>
                 </a>
                 <a href="/payment/stripe" className="text-gold hover:text-gold-light transition-colors underline">
-                  pay_stripe
+                  <span className="inline">Pay Stripe</span>
                 </a>
                 <a href="/payment/paypal" className="text-gold hover:text-gold-light transition-colors underline">
-                  pay_paypal
+                  <span className="inline">Pay PayPal</span>
                 </a>
-                <a href="/integrations" className="text-gold hover:text-gold-light transition-colors underline hidden sm:inline">
-                  integrations
+                <a href="/integrations" className="text-gold hover:text-gold-light transition-colors underline">
+                  <span className="inline">Integrations</span>
                 </a>
               </div>
             </div>

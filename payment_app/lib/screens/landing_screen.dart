@@ -638,6 +638,12 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
       vsync: this,
     )..repeat(reverse: true);
 
+    startTyping();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _scanLineAnimation = Tween<double>(
       begin: -10.0,
       end: MediaQuery.of(context).size.height,
@@ -645,8 +651,6 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
       parent: _scanLineController,
       curve: Curves.easeInOut,
     ));
-
-    startTyping();
   }
 
   @override

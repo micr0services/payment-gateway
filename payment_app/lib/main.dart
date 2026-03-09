@@ -32,11 +32,12 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'PayLedger',
-        theme: ThemeData.dark().copyWith(
+        theme: ThemeData(
+          fontFamily: 'monospace',
           colorScheme: const ColorScheme.dark(
             primary: Color(0xFFC9A84C), // Gold color
             secondary: Color(0xFFC9A84C),
-            surface: Color(0xFF1A1A1A), // Dark surface
+            surface: Color(0xFF12151F), // Dark surface
             background: Color(0xFF0A0A0F), // Obsidian background
             onPrimary: Color(0xFF0A0A0F),
             onSecondary: Color(0xFF0A0A0F),
@@ -55,30 +56,34 @@ class MyApp extends StatelessWidget {
               foregroundColor: const Color(0xFF0A0A0F),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
               ),
             ),
           ),
           inputDecorationTheme: InputDecorationTheme(
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFFC9A84C)),
+              borderRadius: BorderRadius.circular(4),
+              borderSide: const BorderSide(color: Color(0xFF404040)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(4),
               borderSide: const BorderSide(color: Color(0xFF404040)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(4),
               borderSide: const BorderSide(color: Color(0xFFC9A84C)),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            labelStyle: const TextStyle(color: Color(0xFFE0E0E0)),
-            hintStyle: const TextStyle(color: Color(0xFF808080)),
+            labelStyle: const TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'monospace'),
+            hintStyle: const TextStyle(color: Color(0xFF7A7A8A), fontFamily: 'monospace'),
           ),
           textTheme: const TextTheme(
-            bodyLarge: TextStyle(color: Color(0xFFE0E0E0)),
-            bodyMedium: TextStyle(color: Color(0xFFE0E0E0)),
+            bodyLarge: TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'monospace'),
+            bodyMedium: TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'monospace'),
+            bodySmall: TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'monospace'),
+            headlineLarge: TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'monospace'),
+            headlineMedium: TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'monospace'),
+            headlineSmall: TextStyle(color: Color(0xFFE0E0E0), fontFamily: 'monospace'),
           ),
         ),
         home: const LandingScreen(),
