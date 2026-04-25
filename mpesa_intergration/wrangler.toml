@@ -1,0 +1,26 @@
+name = "mpesa-integration-worker"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+MPESA_CONSUMER_KEY = "hUTwRyBvxLZaXbZLXE2E8xOySfkbHRlNuD3AhObrgjn99qzK"
+MPESA_CONSUMER_SECRET = "cNz1WGjBfOOtrNMSwBcakowQ6UDDmGAbfqKwtVQxF4yf4xAVp11gZ410DdrM7bcG"
+MPESA_SHORTCODE = "174379"
+MPESA_PASSKEY = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
+MPESA_ENVIRONMENT = "sandbox"
+MPESA_C2B_VALIDATE_URL = "https://mpesa-integration-worker.kimaniwilfred95.workers.dev/callbacks/c2b/validate"
+MPESA_C2B_CONFIRM_URL = "https://mpesa-integration-worker.kimaniwilfred95.workers.dev/callbacks/c2b/confirm"
+MPESA_B2C_CALLBACK_URL = "https://mpesa-integration-worker.kimaniwilfred95.workers.dev/callbacks/b2c"
+MPESA_B2B_CALLBACK_URL = "https://mpesa-integration-worker.kimaniwilfred95.workers.dev/callbacks/b2b"
+MPESA_STK_CALLBACK_URL = "https://mpesa-integration-worker.kimaniwilfred95.workers.dev/callbacks/stk/result"
+MPESA_B2POCHI_CALLBACK_URL = "https://mpesa-integration-worker.kimaniwilfred95.workers.dev/callbacks/b2pochi"
+MPESA_REVERSAL_CALLBACK_URL = "https://mpesa-integration-worker.kimaniwilfred95.workers.dev/callbacks/reversal"
+MPESA_INITIATOR_NAME = "testapi"
+MPESA_INITIATOR_PASSWORD = "Safaricom123!!"
+DATABASE_URL = "postgresql://onlinedbtester_user:Oi4HR7cZKdo0AuwkLLQIoCrLrbSE30SQ@dpg-d6imjtua2pns7398ghs0-a.oregon-postgres.render.com/onlinedbtester?sslmode=require"
+# Database configuration (for future D1 integration)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "mpesa-db"
+# database_id = ""

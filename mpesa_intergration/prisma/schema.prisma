@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id                String   @id @default(uuid())
+  transactionType   String   // B2C, C2B, B2B, STK_PUSH, STK_QUERY, REVERSAL, B2P (B2Pochi)
+  status            String   // SUCCESS, PENDING, FAILED
+  mobileNumber      String
+  amount            Decimal
+  description       String?
+  conversationId    String?
+  originatorConversationId String?
+  mpesaConversationId String?        // M-Pesa generated ConversationID from response
+  resultCode        Int?
+  resultDesc        String?
+  mpesaTransactionId String?
+  mpesaReceiptNumber String?
+  
+  // Request data
+  requestPayload    Json
+  
+  // Response data
+  responsePayload   Json?
+  
+  // Webhook data
+  callbackPayload   Json?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([transactionType])
+  @@index([status])
+  @@index([mobileNumber])
+  @@index([createdAt])
+}
+
+model WebhookLog {
+  id                String   @id @default(uuid())
+  eventType         String   // c2b, b2c, stk, etc.
+  payload           Json
+  processedStatus   String   // PROCESSED, PENDING, FAILED
+  errorMessage      String?
+  transactionId     String?
+  createdAt         DateTime @default(now())
+
+  @@index([eventType])
+  @@index([processedStatus])
+  @@index([createdAt])
+}
+
+model ApiLog {
+  id                String   @id @default(uuid())
+  endpoint          String
+  method            String
+  statusCode        Int
+  responseTime      Int     // in milliseconds
+  errorMessage      String?
+  createdAt         DateTime @default(now())
+
+  @@index([endpoint])
+  @@index([statusCode])
+  @@index([createdAt])
+}
