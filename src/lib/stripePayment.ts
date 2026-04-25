@@ -20,14 +20,15 @@ interface PaymentResult {
 }
 
 /**
- * Validates payment amount and currency
+ * Validates payment amount is in smallest currency unit
+ * Note: Conversion from decimal to smallest unit happens in the route handler
  */
 function validatePaymentParams(amount: number, currency: string): void {
   if (amount <= 0) {
     throw new Error('Amount must be greater than 0');
   }
 
-  // Stripe requires amounts in smallest currency unit (cents for USD)
+  // Amount should be an integer (already converted to smallest unit in route)
   if (amount !== Math.floor(amount)) {
     throw new Error('Amount must be in smallest currency unit (e.g., cents for USD)');
   }

@@ -1,5 +1,5 @@
 -- Up migration
-CREATE TABLE transactions (
+CREATE TABLE payment_transactions (
   id SERIAL PRIMARY KEY,
   idempotency_key TEXT UNIQUE NOT NULL,
   gateway TEXT NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE transactions (
 );
 
 -- Create index on idempotency_key for faster lookups
-CREATE INDEX idx_transactions_idempotency_key ON transactions(idempotency_key);
-CREATE INDEX idx_transactions_gateway ON transactions(gateway);
-CREATE INDEX idx_transactions_status ON transactions(status);
-CREATE INDEX idx_transactions_created_at ON transactions(created_at);
+CREATE INDEX idx_payment_transactions_idempotency_key ON payment_transactions(idempotency_key);
+CREATE INDEX idx_payment_transactions_gateway ON payment_transactions(gateway);
+CREATE INDEX idx_payment_transactions_status ON payment_transactions(status);
+CREATE INDEX idx_payment_transactions_created_at ON payment_transactions(created_at);

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import Transaction from '../models/Transaction';
 import { processPaypalPayment, capturePaypalPayment } from '../lib/paypalPayment';
+import { sendCallback, constructCallbackPayload, sendCancelNotification, constructCancelPayload } from '../lib/callbackUtils';
 import idempotencyMiddleware from '../middleware/idempotency';
 import retry from 'async-retry';
 
@@ -19,7 +20,7 @@ const router = new Hono<{
 }>();
 
 router.post('/paypal', idempotencyMiddleware, async (c) => {
-  const { amount, currency = 'USD', metadata = {} } = await c.req.json();
+  const { amount, currency = 'USD', callbackUrl, cancelUrl, metadata = {} } = await c.req.json();
 
   // Validate input
   if (!amount || amount <= 0) {
@@ -33,6 +34,8 @@ router.post('/paypal', idempotencyMiddleware, async (c) => {
       amount,
       currency,
       status: 'pending',
+      callbackUrl,
+      cancelUrl,
       metadata
     });
 
@@ -63,7 +66,9 @@ router.post('/paypal', idempotencyMiddleware, async (c) => {
       orderId: result.orderId,
       links: result.links,
       approvalUrl: result.approvalUrl,
-      status: 'pending'
+      status: 'pending',
+      callbackUrlRegistered: !!callbackUrl,
+      cancelUrlRegistered: !!cancelUrl
     });
   } catch (error: any) {
     await Transaction.updateStatus(c.env.DATABASE_URL, c.get('idempotencyKey'), 'failed', null, error.message);
@@ -87,6 +92,19 @@ router.post('/paypal/verify', async (c) => {
       const transaction = await Transaction.findByPaypalOrderId(c.env.DATABASE_URL, order_id);
       if (transaction && transaction.status !== 'completed') {
         await Transaction.updateStatus(c.env.DATABASE_URL, transaction.idempotency_key, 'completed', result.id);
+
+        // Send callback if callback URL is registered
+        if (transaction.callback_url) {
+          const payload = constructCallbackPayload({
+            ...transaction,
+            transaction_id: result.id,
+            status: 'completed'
+          });
+          // Send callback asynchronously (fire and forget)
+          sendCallback(transaction.callback_url, payload).catch(err => 
+            console.error('Callback delivery failed:', err)
+          );
+        }
       }
 
       return c.json({
@@ -95,11 +113,51 @@ router.post('/paypal/verify', async (c) => {
           id: result.id,
           status: result.status,
           amount: result.result.purchase_units[0].amount,
-        }
+        },
+        callbackSent: !!transaction?.callback_url
       });
     } else {
       return c.json({ success: false, error: result.error || 'Payment not completed' });
     }
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500);
+  }
+});
+
+// Cancel PayPal order
+router.post('/paypal/:orderId/cancel', async (c) => {
+  const { orderId } = c.req.param();
+  const { reason = 'User initiated' } = await c.req.json();
+
+  try {
+    // Find transaction and update status to cancelled
+    const transaction = await Transaction.findByPaypalOrderId(c.env.DATABASE_URL, orderId);
+    if (!transaction) {
+      return c.json({ error: 'Transaction not found' }, 404);
+    }
+
+    await Transaction.updateStatus(c.env.DATABASE_URL, transaction.idempotency_key, 'cancelled');
+
+    // Send cancel notification if cancel URL is registered
+    if (transaction.cancel_url) {
+      const payload = constructCancelPayload({
+        ...transaction,
+        transaction_id: orderId,
+        status: 'cancelled'
+      }, reason);
+      // Send cancel notification asynchronously (fire and forget)
+      sendCancelNotification(transaction.cancel_url, payload).catch(err => 
+        console.error('Cancel notification delivery failed:', err)
+      );
+    }
+
+    return c.json({
+      success: true,
+      orderId: orderId,
+      status: 'cancelled',
+      message: 'Order cancelled successfully',
+      cancelNotificationSent: !!transaction.cancel_url
+    });
   } catch (error: any) {
     return c.json({ success: false, error: error.message }, 500);
   }

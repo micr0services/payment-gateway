@@ -8,6 +8,8 @@ import {
   confirmStripePayment,
   getStripeClient
 } from '../lib/stripePayment';
+import { convertToSmallestUnit, validatePaymentAmount } from '../lib/paymentUtils';
+import { sendCallback, constructCallbackPayload, sendCancelNotification, constructCancelPayload } from '../lib/callbackUtils';
 import idempotencyMiddleware from '../middleware/idempotency';
 import retry from 'async-retry';
 
@@ -25,22 +27,27 @@ const router = new Hono<{
 }>();
 
 router.post('/stripe', idempotencyMiddleware, async (c) => {
-  const { amount, currency = 'usd', metadata = {} } = await c.req.json();
+  const { amount, currency = 'usd', callbackUrl, cancelUrl, metadata = {} } = await c.req.json();
 
-  // Validate input
+  // Validate and convert amount from dollars to cents (or appropriate smallest unit)
   if (!amount || amount <= 0) {
     return c.json({ error: 'Valid amount is required' }, 400);
   }
 
   try {
+    // Convert from decimal (e.g., 24.50) to smallest unit (e.g., 2450 cents)
+    const amountInSmallestUnit = convertToSmallestUnit(currency, amount);
+
     // Create transaction record with pending status
     const transaction = await Transaction.create(c.env.DATABASE_URL, {
       idempotencyKey: c.get('idempotencyKey'),
       gateway: 'stripe',
-      amount,
+      amount: amountInSmallestUnit,
       currency: currency.toUpperCase(),
       status: 'pending',
-      metadata
+      callbackUrl,
+      cancelUrl,
+      metadata: { ...metadata, originalAmount: amount, conversionNote: `Converted from ${amount} to ${amountInSmallestUnit} smallest units` }
     });
 
     if (!transaction) {
@@ -51,7 +58,7 @@ router.post('/stripe', idempotencyMiddleware, async (c) => {
     const result = await retry(async (bail) => {
       const paymentResult = await processStripePayment(
         c.env.STRIPE_SECRET_KEY,
-        amount,
+        amountInSmallestUnit,
         currency,
         metadata,
         c.get('idempotencyKey')
@@ -75,11 +82,15 @@ router.post('/stripe', idempotencyMiddleware, async (c) => {
     return c.json({
       checkoutUrl: result.checkoutUrl,
       sessionId: result.id,
-      status: 'pending'
+      status: 'pending',
+      amountProcessed: amountInSmallestUnit,
+      currency: currency.toUpperCase(),
+      callbackUrlRegistered: !!callbackUrl,
+      cancelUrlRegistered: !!cancelUrl
     });
   } catch (error: any) {
     await Transaction.updateStatus(c.env.DATABASE_URL, c.get('idempotencyKey'), 'failed', null, error.message);
-    return c.json({ error: error.message }, 500);
+    return c.json({ error: error.message }, 400);
   }
 });
 
@@ -116,6 +127,7 @@ router.get('/stripe/:paymentIntentId', async (c) => {
 // Cancel payment
 router.post('/stripe/:paymentIntentId/cancel', async (c) => {
   const { paymentIntentId } = c.req.param();
+  const { reason = 'User initiated' } = await c.req.json();
 
   try {
     const result = await cancelStripePayment(c.env.STRIPE_SECRET_KEY, paymentIntentId);
@@ -127,12 +139,26 @@ router.post('/stripe/:paymentIntentId/cancel', async (c) => {
     const transaction = await Transaction.findByStripePaymentIntentId(c.env.DATABASE_URL, paymentIntentId);
     if (transaction) {
       await Transaction.updateStatus(c.env.DATABASE_URL, transaction.idempotency_key, 'cancelled');
+
+      // Send cancel notification if cancel URL is registered
+      if (transaction.cancel_url) {
+        const payload = constructCancelPayload({
+          ...transaction,
+          transaction_id: result.id,
+          status: 'cancelled'
+        }, reason);
+        // Send cancel notification asynchronously (fire and forget)
+        sendCancelNotification(transaction.cancel_url, payload).catch(err => 
+          console.error('Cancel notification delivery failed:', err)
+        );
+      }
     }
 
     return c.json({
       paymentIntentId: result.id,
       status: result.status,
-      message: 'Payment cancelled successfully'
+      message: 'Payment cancelled successfully',
+      cancelNotificationSent: !!transaction?.cancel_url
     });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
@@ -175,12 +201,26 @@ router.post('/stripe/:paymentIntentId/confirm', async (c) => {
     const transaction = await Transaction.findByStripePaymentIntentId(c.env.DATABASE_URL, paymentIntentId);
     if (transaction) {
       await Transaction.updateStatus(c.env.DATABASE_URL, transaction.idempotency_key, 'completed');
+
+      // Send callback if callback URL is registered
+      if (transaction.callback_url) {
+        const payload = constructCallbackPayload({
+          ...transaction,
+          transaction_id: result.id,
+          status: 'completed'
+        });
+        // Send callback asynchronously (fire and forget)
+        sendCallback(transaction.callback_url, payload).catch(err => 
+          console.error('Callback delivery failed:', err)
+        );
+      }
     }
 
     return c.json({
       paymentIntentId: result.id,
       status: result.status,
-      message: 'Payment confirmed successfully'
+      message: 'Payment confirmed successfully',
+      callbackSent: !!transaction?.callback_url
     });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
