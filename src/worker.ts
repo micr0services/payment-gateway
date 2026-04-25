@@ -57,7 +57,7 @@ app.get('/api/openapi.json', (c) => {
       '/api/payments/stripe': {
         post: {
           summary: 'Create Stripe Payment Intent',
-          description: 'Creates a new Stripe payment intent with idempotency support',
+          description: 'Creates a new Stripe payment intent with idempotency support and optional callback/cancel URLs',
           tags: ['Payments'],
           security: [],
           parameters: [
@@ -78,6 +78,8 @@ app.get('/api/openapi.json', (c) => {
                   properties: {
                     amount: { type: 'integer', description: 'Payment amount in cents (e.g., 50 for $0.50)' },
                     currency: { type: 'string', default: 'usd', description: 'Currency code' },
+                    callbackUrl: { type: 'string', description: 'Webhook URL to notify on payment completion' },
+                    cancelUrl: { type: 'string', description: 'Webhook URL to notify on payment cancellation' },
                     metadata: { type: 'object', description: 'Additional metadata' },
                   },
                   required: ['amount'],
@@ -93,8 +95,13 @@ app.get('/api/openapi.json', (c) => {
                   schema: {
                     type: 'object',
                     properties: {
-                      clientSecret: { type: 'string' },
-                      transactionId: { type: 'string' },
+                      checkoutUrl: { type: 'string' },
+                      sessionId: { type: 'string' },
+                      status: { type: 'string' },
+                      amountProcessed: { type: 'integer' },
+                      currency: { type: 'string' },
+                      callbackUrlRegistered: { type: 'boolean' },
+                      cancelUrlRegistered: { type: 'boolean' },
                     },
                   },
                 },
@@ -109,7 +116,7 @@ app.get('/api/openapi.json', (c) => {
       '/api/payments/paypal': {
         post: {
           summary: 'Create PayPal Order',
-          description: 'Creates a new PayPal order with idempotency support',
+          description: 'Creates a new PayPal order with idempotency support and optional callback/cancel URLs',
           tags: ['Payments'],
           parameters: [
             {
@@ -128,6 +135,8 @@ app.get('/api/openapi.json', (c) => {
                   properties: {
                     amount: { type: 'integer', description: 'Payment amount in cents' },
                     currency: { type: 'string', default: 'USD' },
+                    callbackUrl: { type: 'string', description: 'Webhook URL to notify on payment completion' },
+                    cancelUrl: { type: 'string', description: 'Webhook URL to notify on payment cancellation' },
                     metadata: { type: 'object' },
                   },
                   required: ['amount'],
@@ -145,6 +154,10 @@ app.get('/api/openapi.json', (c) => {
                     properties: {
                       orderId: { type: 'string' },
                       links: { type: 'array' },
+                      approvalUrl: { type: 'string' },
+                      status: { type: 'string' },
+                      callbackUrlRegistered: { type: 'boolean' },
+                      cancelUrlRegistered: { type: 'boolean' },
                     },
                   },
                 },
@@ -159,7 +172,7 @@ app.get('/api/openapi.json', (c) => {
       '/api/payments/paypal/confirm/{orderId}': {
         post: {
           summary: 'Confirm PayPal Payment',
-          description: 'Captures a PayPal order after user approval',
+          description: 'Captures a PayPal order after user approval and sends callback notification',
           tags: ['Payments'],
           parameters: [
             {
@@ -177,8 +190,9 @@ app.get('/api/openapi.json', (c) => {
                   schema: {
                     type: 'object',
                     properties: {
-                      status: { type: 'string' },
-                      id: { type: 'string' },
+                      success: { type: 'boolean' },
+                      order: { type: 'object' },
+                      callbackSent: { type: 'boolean' },
                     },
                   },
                 },
@@ -187,6 +201,56 @@ app.get('/api/openapi.json', (c) => {
             '500': { description: 'Internal server error' },
           },
         },
+      },
+      '/api/payments/paypal/{orderId}/cancel': {
+        post: {
+          summary: 'Cancel PayPal Order',
+          description: 'Cancel a pending PayPal order and notify via cancel URL',
+          tags: ['Payments'],
+          parameters: [
+            {
+              name: 'orderId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'PayPal order ID'
+            }
+          ],
+          requestBody: {
+            required: false,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    reason: { type: 'string', default: 'User initiated', description: 'Reason for cancellation' }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            '200': {
+              description: 'Order cancelled successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean' },
+                      orderId: { type: 'string' },
+                      status: { type: 'string' },
+                      message: { type: 'string' },
+                      cancelNotificationSent: { type: 'boolean' }
+                    }
+                  }
+                }
+              }
+            },
+            '404': { description: 'Transaction not found' },
+            '500': { description: 'Internal server error' }
+          }
+        }
       },
       '/api/transactions': {
         get: {
@@ -271,7 +335,7 @@ app.get('/api/openapi.json', (c) => {
       '/api/payments/stripe/{paymentIntentId}/cancel': {
         post: {
           summary: 'Cancel Stripe Payment',
-          description: 'Cancel a pending Stripe payment intent',
+          description: 'Cancel a pending Stripe payment intent and notify via cancel URL',
           tags: ['Payments'],
           parameters: [
             {
@@ -282,6 +346,19 @@ app.get('/api/openapi.json', (c) => {
               description: 'Stripe payment intent ID'
             }
           ],
+          requestBody: {
+            required: false,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    reason: { type: 'string', default: 'User initiated', description: 'Reason for cancellation' }
+                  }
+                }
+              }
+            }
+          },
           responses: {
             '200': {
               description: 'Payment cancelled successfully',
@@ -292,7 +369,8 @@ app.get('/api/openapi.json', (c) => {
                     properties: {
                       paymentIntentId: { type: 'string' },
                       status: { type: 'string' },
-                      message: { type: 'string' }
+                      message: { type: 'string' },
+                      cancelNotificationSent: { type: 'boolean' }
                     }
                   }
                 }
@@ -354,7 +432,7 @@ app.get('/api/openapi.json', (c) => {
       '/api/payments/stripe/{paymentIntentId}/confirm': {
         post: {
           summary: 'Confirm Stripe Payment',
-          description: 'Confirm a Stripe PaymentIntent directly using a test payment method (for testing purposes)',
+          description: 'Confirm a Stripe PaymentIntent directly using a test payment method (for testing purposes) and sends callback notification',
           tags: ['Payments'],
           parameters: [
             {
@@ -388,7 +466,8 @@ app.get('/api/openapi.json', (c) => {
                     properties: {
                       paymentIntentId: { type: 'string' },
                       status: { type: 'string' },
-                      message: { type: 'string' }
+                      message: { type: 'string' },
+                      callbackSent: { type: 'boolean' }
                     }
                   }
                 }
