@@ -9,18 +9,7 @@ import Transaction from '../models/Transaction';
  * If no Idempotency-Key is provided, auto-generates one using current timestamp and UUID.
  * Otherwise, attaches the key to the context and proceeds.
  */
-const idempotencyMiddleware: MiddlewareHandler<{ 
-  Bindings: { 
-    STRIPE_SECRET_KEY: string;
-    PAYPAL_ENVIRONMENT: string;
-    PAYPAL_CLIENT_ID: string;
-    PAYPAL_CLIENT_SECRET: string;
-    DATABASE_URL: string;
-  };
-  Variables: {
-    idempotencyKey: string;
-  };
-}> = async (c, next) => {
+const idempotencyMiddleware: MiddlewareHandler = async (c, next) => {
   let idempotencyKey = c.req.header('Idempotency-Key');
   
   // Auto-generate idempotency key if not provided

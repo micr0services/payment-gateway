@@ -1,4 +1,4 @@
-import { getDbPool } from '../lib/db';
+import { getDbConnection } from '../lib/db';
 
 interface TransactionData {
   id?: number;
@@ -25,6 +25,7 @@ interface CreateTransactionParams {
   currency: string;
   status: string;
   metadata: any;
+  transactionId?: string;
   stripePaymentIntentId?: string;
   paypalOrderId?: string;
   callbackUrl?: string;
@@ -44,15 +45,19 @@ class Transaction {
    * @returns The created transaction data or undefined if conflict
    */
   static async create(databaseUrl: string, params: CreateTransactionParams): Promise<TransactionData | undefined> {
-    const { idempotencyKey, gateway, amount, currency, status, metadata, stripePaymentIntentId, paypalOrderId, callbackUrl, cancelUrl } = params;
-    const sql = getDbPool(databaseUrl);
-    const result = await sql`
-      INSERT INTO payment_transactions (idempotency_key, gateway, amount, currency, status, metadata, stripe_payment_intent_id, paypal_order_id, callback_url, cancel_url, created_at, updated_at)
-      VALUES (${idempotencyKey}, ${gateway}, ${amount}, ${currency}, ${status}, ${JSON.stringify(metadata)}, ${stripePaymentIntentId || null}, ${paypalOrderId || null}, ${callbackUrl || null}, ${cancelUrl || null}, NOW(), NOW())
-      ON CONFLICT (idempotency_key) DO NOTHING
-      RETURNING *;
-    `;
-    return result.length > 0 ? result[0] as TransactionData : undefined;
+    const sql = getDbConnection(databaseUrl);
+    try {
+      const { idempotencyKey, gateway, amount, currency, status, metadata, transactionId, stripePaymentIntentId, paypalOrderId, callbackUrl, cancelUrl } = params;
+      const result = await sql`
+        INSERT INTO payment_gateway.payment_transactions (idempotency_key, gateway, amount, currency, status, transaction_id, metadata, stripe_payment_intent_id, paypal_order_id, callback_url, cancel_url, created_at, updated_at)
+        VALUES (${idempotencyKey}, ${gateway}, ${amount}, ${currency}, ${status}, ${transactionId || null}, ${JSON.stringify(metadata)}, ${stripePaymentIntentId || null}, ${paypalOrderId || null}, ${callbackUrl || null}, ${cancelUrl || null}, NOW(), NOW())
+        ON CONFLICT (idempotency_key) DO NOTHING
+        RETURNING *;
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
   }
 
   /**
@@ -62,11 +67,15 @@ class Transaction {
    * @returns The transaction data or undefined if not found
    */
   static async findById(databaseUrl: string, id: number): Promise<TransactionData | undefined> {
-    const sql = getDbPool(databaseUrl);
-    const result = await sql`
-      SELECT * FROM payment_transactions WHERE id = ${id};
-    `;
-    return result.length > 0 ? result[0] as TransactionData : undefined;
+    const sql = getDbConnection(databaseUrl);
+    try {
+      const result = await sql`
+        SELECT * FROM payment_gateway.payment_transactions WHERE id = ${id};
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
   }
 
   /**
@@ -76,11 +85,15 @@ class Transaction {
    * @returns The transaction data or undefined if not found
    */
   static async findByIdempotencyKey(databaseUrl: string, idempotencyKey: string): Promise<TransactionData | undefined> {
-    const sql = getDbPool(databaseUrl);
-    const result = await sql`
-      SELECT * FROM payment_transactions WHERE idempotency_key = ${idempotencyKey};
-    `;
-    return result.length > 0 ? result[0] as TransactionData : undefined;
+    const sql = getDbConnection(databaseUrl);
+    try {
+      const result = await sql`
+        SELECT * FROM payment_gateway.payment_transactions WHERE idempotency_key = ${idempotencyKey};
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
   }
 
   /**
@@ -90,11 +103,15 @@ class Transaction {
    * @returns The transaction data or undefined if not found
    */
   static async findByStripePaymentIntentId(databaseUrl: string, stripePaymentIntentId: string): Promise<TransactionData | undefined> {
-    const sql = getDbPool(databaseUrl);
-    const result = await sql`
-      SELECT * FROM payment_transactions WHERE stripe_payment_intent_id = ${stripePaymentIntentId};
-    `;
-    return result.length > 0 ? result[0] as TransactionData : undefined;
+    const sql = getDbConnection(databaseUrl);
+    try {
+      const result = await sql`
+        SELECT * FROM payment_gateway.payment_transactions WHERE stripe_payment_intent_id = ${stripePaymentIntentId};
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
   }
 
   /**
@@ -104,11 +121,15 @@ class Transaction {
    * @returns The transaction data or undefined if not found
    */
   static async findByPaypalOrderId(databaseUrl: string, paypalOrderId: string): Promise<TransactionData | undefined> {
-    const sql = getDbPool(databaseUrl);
-    const result = await sql`
-      SELECT * FROM payment_transactions WHERE paypal_order_id = ${paypalOrderId};
-    `;
-    return result.length > 0 ? result[0] as TransactionData : undefined;
+    const sql = getDbConnection(databaseUrl);
+    try {
+      const result = await sql`
+        SELECT * FROM payment_gateway.payment_transactions WHERE paypal_order_id = ${paypalOrderId};
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
   }
 
   /**
@@ -131,19 +152,23 @@ class Transaction {
     stripePaymentIntentId: string | null = null,
     paypalOrderId: string | null = null
   ): Promise<TransactionData | undefined> {
-    const sql = getDbPool(databaseUrl);
-    const result = await sql`
-      UPDATE payment_transactions
-      SET status = ${status},
-          transaction_id = ${transactionId},
-          error = ${error},
-          stripe_payment_intent_id = COALESCE(${stripePaymentIntentId}, stripe_payment_intent_id),
-          paypal_order_id = COALESCE(${paypalOrderId}, paypal_order_id),
-          updated_at = NOW()
-      WHERE idempotency_key = ${idempotencyKey}
-      RETURNING *;
-    `;
-    return result.length > 0 ? result[0] as TransactionData : undefined;
+    const sql = getDbConnection(databaseUrl);
+    try {
+      const result = await sql`
+        UPDATE payment_gateway.payment_transactions
+        SET status = ${status},
+            transaction_id = COALESCE(${transactionId}, transaction_id),
+            error = ${error},
+            stripe_payment_intent_id = COALESCE(${stripePaymentIntentId}, stripe_payment_intent_id),
+            paypal_order_id = COALESCE(${paypalOrderId}, paypal_order_id),
+            updated_at = NOW()
+        WHERE idempotency_key = ${idempotencyKey}
+        RETURNING *;
+      `;
+      return result.length > 0 ? result[0] as TransactionData : undefined;
+    } finally {
+      await sql.end();
+    }
   }
 
   /**
@@ -163,46 +188,50 @@ class Transaction {
     endDate?: string;
     idempotencyKey?: string;
   } = {}): Promise<TransactionData[]> {
-    const sql = getDbPool(databaseUrl);
-    let query = sql`SELECT * FROM payment_transactions`;
-    const conditions: any[] = [];
+    const sql = getDbConnection(databaseUrl);
+    try {
+      let query = sql`SELECT * FROM payment_gateway.payment_transactions`;
+      const conditions: any[] = [];
 
-    if (filters.gateway) {
-      conditions.push(sql`gateway = ${filters.gateway}`);
-    }
-    if (filters.status) {
-      conditions.push(sql`status = ${filters.status}`);
-    }
-    if (filters.minAmount !== undefined) {
-      conditions.push(sql`amount >= ${filters.minAmount}`);
-    }
-    if (filters.maxAmount !== undefined) {
-      conditions.push(sql`amount <= ${filters.maxAmount}`);
-    }
-    if (filters.startDate) {
-      conditions.push(sql`created_at >= ${filters.startDate}`);
-    }
-    if (filters.endDate) {
-      conditions.push(sql`created_at <= ${filters.endDate}`);
-    }
-    if (filters.idempotencyKey) {
-      conditions.push(sql`idempotency_key = ${filters.idempotencyKey}`);
-    }
+      if (filters.gateway) {
+        conditions.push(sql`gateway = ${filters.gateway}`);
+      }
+      if (filters.status) {
+        conditions.push(sql`status = ${filters.status}`);
+      }
+      if (filters.minAmount !== undefined) {
+        conditions.push(sql`amount >= ${filters.minAmount}`);
+      }
+      if (filters.maxAmount !== undefined) {
+        conditions.push(sql`amount <= ${filters.maxAmount}`);
+      }
+      if (filters.startDate) {
+        conditions.push(sql`created_at >= ${filters.startDate}`);
+      }
+      if (filters.endDate) {
+        conditions.push(sql`created_at <= ${filters.endDate}`);
+      }
+      if (filters.idempotencyKey) {
+        conditions.push(sql`idempotency_key = ${filters.idempotencyKey}`);
+      }
 
-    if (conditions.length > 0) {
-      for (let i = 0; i < conditions.length; i++) {
-        if (i === 0) {
-          query = sql`${query} WHERE ${conditions[i]}`;
-        } else {
-          query = sql`${query} AND ${conditions[i]}`;
+      if (conditions.length > 0) {
+        for (let i = 0; i < conditions.length; i++) {
+          if (i === 0) {
+            query = sql`${query} WHERE ${conditions[i]}`;
+          } else {
+            query = sql`${query} AND ${conditions[i]}`;
+          }
         }
       }
+
+      query = sql`${query} ORDER BY created_at DESC`;
+
+      const result = await query;
+      return result as unknown as TransactionData[];
+    } finally {
+      await sql.end();
     }
-
-    query = sql`${query} ORDER BY created_at DESC`;
-
-    const result = await query;
-    return result as unknown as TransactionData[];
   }
 }
 

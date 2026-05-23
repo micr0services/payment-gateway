@@ -1,34 +1,23 @@
 import postgres from 'postgres';
 
-// Connection pool cache - reuse across requests
-const connectionPools = new Map<string, ReturnType<typeof postgres>>();
-
 /**
- * Get or create a connection pool for a database URL
- * This significantly improves performance by reusing connections
- * instead of creating/destroying them for each query.
- * 
- * Performance improvement: 10-50x faster for typical workloads
+ * Create a new database connection for each request
+ * Cloudflare Workers require per-request connections due to request isolation
  * @param databaseUrl - PostgreSQL connection string
- * @returns Reusable database connection
+ * @returns New database connection for this request
  */
-export function getDbPool(databaseUrl: string): ReturnType<typeof postgres> {
-  if (!connectionPools.has(databaseUrl)) {
-    connectionPools.set(databaseUrl, postgres(databaseUrl, {
-      max: 5, // Connection pool size
-      idle_timeout: 10, // Close idle connections after 10 seconds
-      max_lifetime: 60 * 60, // Max connection lifetime 1 hour
-    }));
-  }
-  return connectionPools.get(databaseUrl)!;
+export function getDbConnection(databaseUrl: string): ReturnType<typeof postgres> {
+  return postgres(databaseUrl, {
+    max: 1, // Single connection per request
+    idle_timeout: 5, // Close idle connections quickly
+    max_lifetime: 30, // Short lifetime for serverless
+  });
 }
 
 /**
- * Close all connection pools (useful for cleanup)
+ * Legacy function for backward compatibility - now creates per-request connections
+ * @deprecated Use getDbConnection instead
  */
-export async function closeAllPools(): Promise<void> {
-  for (const [, pool] of connectionPools) {
-    await pool.end();
-  }
-  connectionPools.clear();
+export function getDbPool(databaseUrl: string): ReturnType<typeof postgres> {
+  return getDbConnection(databaseUrl);
 }

@@ -22,14 +22,18 @@ async function migrate() {
   });
 
   try {
-    // Read the migration files in order
-    const migrations = [
-      '0001_create_transactions.sql',
-      '0002_add_payment_provider_ids.sql'
-    ];
+    const schemaName = 'payment_gateway';
+    console.log(`Ensuring schema ${schemaName} exists...`);
+    await sql.unsafe(`CREATE SCHEMA IF NOT EXISTS ${schemaName}`);
+    await sql.unsafe(`SET search_path TO ${schemaName}, public`);
+
+    const migrationsDir = path.join(__dirname, '..', 'migrations');
+    const migrations = fs.readdirSync(migrationsDir)
+      .filter(file => file.endsWith('.sql'))
+      .sort();
 
     for (const migrationFile of migrations) {
-      const migrationPath = path.join(__dirname, '..', 'migrations', migrationFile);
+      const migrationPath = path.join(migrationsDir, migrationFile);
       const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
 
       // Split by -- Down migration and take only the up migration

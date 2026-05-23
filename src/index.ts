@@ -1,0 +1,24 @@
+export type Env = {
+  STRIPE_SECRET_KEY: string;
+  STRIPE_WEBHOOK_SECRET: string;
+  PAYPAL_ENVIRONMENT: string;
+  PAYPAL_CLIENT_ID: string;
+  PAYPAL_CLIENT_SECRET: string;
+  FRONTEND_BASE_URL: string;
+  DATABASE_URL: string;
+  MPESA_CONSUMER_KEY: string;
+  MPESA_CONSUMER_SECRET: string;
+  MPESA_SHORTCODE: string;
+  MPESA_PASSKEY: string;
+  MPESA_ENVIRONMENT: string;
+  MPESA_STK_CALLBACK_URL: string;
+  MPESA_INITIATOR_NAME: string;
+  MPESA_INITIATOR_PASSWORD: string;
+  MPESA_B2B_CALLBACK_URL: string;
+  MPESA_B2C_CALLBACK_URL: string;
+  MPESA_B2POCHI_CALLBACK_URL: string;
+  MPESA_REVERSAL_CALLBACK_URL: string;
+  API_BASE_URL?: string;
+  DEVELOPMENT_API_URL?: string;
+  idempotencyKey: string;
+};
