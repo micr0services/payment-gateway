@@ -62,6 +62,48 @@ The Payment Gateway API provides a unified interface to integrate with multiple 
     └───────────────────────────────┘
 ```
 
+## Database & Schema
+
+### Vico Payment Schema
+
+All payment transactions are stored in the **`vico_payment_schema`** PostgreSQL schema for organized and efficient data management.
+
+#### Schema Details
+- **Schema Name**: `vico_payment_schema`
+- **Primary Table**: `payment_transactions`
+- **Purpose**: Centralized storage for all payment gateway transactions
+
+#### Table Structure: payment_transactions
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | SERIAL PRIMARY KEY | Unique transaction identifier |
+| `idempotency_key` | TEXT UNIQUE NOT NULL | Prevents duplicate processing |
+| `gateway` | TEXT NOT NULL | Payment provider (stripe, paypal, mpesa) |
+| `amount` | INTEGER NOT NULL | Amount in cents |
+| `currency` | TEXT NOT NULL | Currency code (USD, EUR, etc.) |
+| `status` | TEXT NOT NULL | Transaction status (pending, completed, failed) |
+| `transaction_id` | TEXT | Payment provider's transaction ID |
+| `error` | TEXT | Error message if transaction failed |
+| `metadata` | JSONB | Additional transaction metadata |
+| `stripe_payment_intent_id` | TEXT | Stripe payment intent identifier |
+| `paypal_order_id` | TEXT | PayPal order identifier |
+| `callback_url` | TEXT | Webhook callback URL for status updates |
+| `cancel_url` | TEXT | URL to redirect on payment cancellation |
+| `created_at` | TIMESTAMP | Transaction creation timestamp |
+| `updated_at` | TIMESTAMP | Transaction last update timestamp |
+
+#### Indexes for Performance
+The table includes the following indexes for optimized query performance:
+- `idx_payment_transactions_idempotency_key` - Fast duplicate detection
+- `idx_payment_transactions_gateway` - Provider-based filtering
+- `idx_payment_transactions_status` - Status queries
+- `idx_payment_transactions_created_at` - Time-based queries
+- `idx_payment_transactions_stripe_payment_intent_id` - Stripe lookups
+- `idx_payment_transactions_paypal_order_id` - PayPal lookups
+- `idx_payment_transactions_callback_url` - Webhook queries
+- `idx_payment_transactions_cancel_url` - URL lookups
+
 ## Getting Started
 
 ### 1. Prerequisites

@@ -135,8 +135,13 @@ NEXT_PUBLIC_WORKER_URL=https://your-worker.workers.dev
 
 ### Database
 - Uses PostgreSQL with migrations
-- Transaction table stores all payment data
+- **Schema**: `vico_payment_schema` - Dedicated payment processing schema
+- **Table**: `vico_payment_schema.payment_transactions` - Stores all payment data
+  - Tracks transaction status and metadata
+  - Stores payment provider IDs (Stripe, PayPal)
+  - Manages callback and cancel URLs
 - Idempotency keys prevent duplicate processing
+- Comprehensive indexing for optimized query performance
 
 ### Security
 - All sensitive operations server-side

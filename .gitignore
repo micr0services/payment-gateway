@@ -40,3 +40,6 @@ temp/
 # OS
 Thumbs.db
 .DS_Store
+
+# Cloudflare Wrangler
+wrangler.toml
